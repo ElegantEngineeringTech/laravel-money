@@ -79,7 +79,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
             $currencyCode = (string) str($value)->match('/[A-Z]{3}/');
             $currency = $currencyCode ? Currency::of($currencyCode) : $this->getMoneyCurrency($attributes);
             $value = (string) str($value)->replaceMatches("/[^0-9\.]/", '')->replace(',', '');
-            $money = Money::of( $value, $currency);
+            $money = Money::of($value, $currency);
         } catch (\Throwable $th) {
             throw $th;
         }
