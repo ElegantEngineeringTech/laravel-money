@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Casts;
+namespace Finller\Money;
 
 use Brick\Money\Currency;
 use Brick\Money\Money;
@@ -28,7 +28,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 
     protected function getMoneyCurrency(array $attributes): Currency
     {
-        if ($modelDefinedCurrency = Arr::get($attributes, $this->currency)) {
+        if ($this->currency && $modelDefinedCurrency = Arr::get($attributes, $this->currency)) {
             return Currency::of($modelDefinedCurrency);
         }
 
