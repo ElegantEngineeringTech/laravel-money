@@ -8,5 +8,5 @@ return [
      |--------------------------------------------------------------------------
      */
     'locale' => config('app.locale', 'en_US'),
-    'defaultCurrency' => 'USD',
+    'default_currency' => 'USD',
 ];

@@ -2,6 +2,7 @@
 
 namespace Finller\Money;
 
+use Brick\Math\RoundingMode;
 use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
@@ -32,7 +33,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
             return Currency::of($modelDefinedCurrency);
         }
 
-        return Currency::of(config('money.defaultCurrency'));
+        return Currency::of(config('money.default_currency'));
     }
 
     /**
@@ -69,19 +70,16 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
         }
 
         if ($value instanceof Money) {
-            return [
-                $key => $value->getMinorAmount()->toInt(),
-                $this->currency => $value->getCurrency()->getCurrencyCode(),
-            ];
-        }
-
-        try {
-            $currencyCode = (string) str($value)->match('/[A-Z]{3}/');
-            $currency = $currencyCode ? Currency::of($currencyCode) : $this->getMoneyCurrency($attributes);
-            $value = (string) str($value)->replaceMatches("/[^0-9\.]/", '')->replace(',', '');
-            $money = Money::of($value, $currency);
-        } catch (\Throwable $th) {
-            throw $th;
+            $money = $value;
+        } elseif (is_int($value)) {
+            $money = Money::ofMinor($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
+        } elseif (is_float($value)) {
+            $money = Money::of($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
+        } elseif (is_string($value)) {
+            $CurrencyCodeGuessed = (string) str($value)->match('/[A-Z]{3}/');
+            $currency = rescue(fn () => Currency::of($CurrencyCodeGuessed), $this->getMoneyCurrency($attributes));
+            $amount = str($value)->replaceMatches("/[^0-9\.]/", '')->replace([',', '.'], '');
+            $money = Money::ofMinor((string) $amount, $currency, null, RoundingMode::HALF_EVEN);
         }
 
         return [
