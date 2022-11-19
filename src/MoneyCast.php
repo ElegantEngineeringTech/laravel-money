@@ -81,8 +81,8 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
             $currency = rescue(fn () => Currency::of($CurrencyCodeGuessed), $this->getMoneyCurrency($attributes));
             $amount = str($value)->replaceMatches("/[^0-9\.]/", '')->replace([',', '.'], '');
             $money = Money::ofMinor((string) $amount, $currency, null, RoundingMode::HALF_EVEN);
-        }else{
-            throw new Exception(get_class($this) . " Can not parse value of type: " . gettype($value));
+        } else {
+            throw new Exception(get_class($this).' Can not parse value of type: '.gettype($value));
         }
 
         return [
