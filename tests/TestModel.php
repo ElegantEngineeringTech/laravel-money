@@ -16,7 +16,7 @@ class TestModel extends Model
     protected $fillable = ['price', 'currency', 'price_default_currency'];
 
     protected $casts = [
-        'price' => MoneyCast::class . ":currency",
+        'price' => MoneyCast::class.':currency',
         'price_default_currency' => MoneyCast::class,
     ];
 }
