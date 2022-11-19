@@ -5,6 +5,7 @@ namespace Finller\Money;
 use Brick\Math\RoundingMode;
 use Brick\Money\Currency;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes;
 use Illuminate\Support\Arr;
@@ -59,7 +60,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @param  string  $key
-     * @param  null|string|Money  $value
+     * @param  null|int|float|string|Money  $value
      * @param  array  $attributes
      * @return array
      */
@@ -80,6 +81,8 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
             $currency = rescue(fn () => Currency::of($CurrencyCodeGuessed), $this->getMoneyCurrency($attributes));
             $amount = str($value)->replaceMatches("/[^0-9\.]/", '')->replace([',', '.'], '');
             $money = Money::ofMinor((string) $amount, $currency, null, RoundingMode::HALF_EVEN);
+        }else{
+            throw new Exception(get_class($this) . " Can not parse value of type: " . gettype($value));
         }
 
         return [
