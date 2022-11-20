@@ -45,8 +45,8 @@ it('can prepare money represented as serialized string', function ($currency, $p
     expect($model->price->getAmount()->toFloat())->toBe($expected);
     expect($model->price->getCurrency()->getCurrencyCode())->toBe($currency);
 })->with([
-    ["EUR", 'EUR 1,234.56', 1234.56],
-    ["EUR", 'EUR 1234.56', 1234.56],
-    ["EUR", '1234', 1234.0],
-    ["EUR", 'EUR 1,234', 1234.0], // ignore ","
+    ['EUR', 'EUR 1,234.56', 1234.56],
+    ['EUR', 'EUR 1234.56', 1234.56],
+    ['EUR', '1234', 1234.0],
+    ['EUR', 'EUR 1,234', 1234.0], // ignore ","
 ]);
