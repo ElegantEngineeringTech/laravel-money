@@ -15,15 +15,13 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
     /**
      * The currency code or the model attribute holding the currency code.
      * used like: MoneyCast::class.':currency'
-     *
-     * @var string|null
      */
-    protected $currency;
+    protected ?string $currency;
 
     /**
      * @param  string|null  $currency
      */
-    public function __construct(string $currency = null)
+    public function __construct(?string $currency = null)
     {
         $this->currency = $currency;
     }
@@ -89,8 +87,10 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
         } elseif (is_string($value)) {
             preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[\d,\.]*)/", $value, $matches);
 
-            $currencyCode = Arr::get($matches, 'currency', $this->getMoneyCurrency($attributes));
-            $currency = rescue(fn () => Currency::of($currencyCode), $this->getMoneyCurrency($attributes));
+            $currencyCode = Arr::get($matches, 'currency');
+            $currency = $currencyCode ?
+                rescue(fn () => Currency::of($currencyCode), $this->getMoneyCurrency($attributes)) :
+                $this->getMoneyCurrency($attributes);
 
             $amount = str_replace(',', '', Arr::get($matches, 'amount', '0'));
 
