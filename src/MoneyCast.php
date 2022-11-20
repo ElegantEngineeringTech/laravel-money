@@ -39,7 +39,8 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 
     /**
      * Cast the given value.
-     *
+     * Money is stored as integer and reprensent minor value including decimals
+     * 
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @param  string  $key
      * @param  mixed  $value
@@ -57,6 +58,15 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 
     /**
      * Prepare the given value for storage.
+     * Money is stored as integer so it include decimals as part the integer (100 = $1.00)
+     * But for conveniance and better compatibility with users input we will always consider that the amount is not a minor representation
+     * \Brick\Money\Money is cast to string with this format: USD 1000.00 (equivalent to $1,000.00)
+     * Given this context, money represented as string are parsed following theses patterns:
+     * [money as string] => [common human format]
+     * USD 1000.00 => $1,000.00
+     * USD 1000 => $1000
+     * USD 10.00 => $10.00
+     * USD 1,000 => $1000 "," will be ignored
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @param  string  $key
@@ -73,15 +83,19 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
         if ($value instanceof Money) {
             $money = $value;
         } elseif (is_int($value)) {
-            $money = Money::ofMinor($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
+            $money = Money::of($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
         } elseif (is_float($value)) {
             $money = Money::of($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
         } elseif (is_string($value)) {
-            $CurrencyCodeGuessed = (string) str($value)->match('/[A-Z]{3}/');
-            $currency = rescue(fn () => Currency::of($CurrencyCodeGuessed), $this->getMoneyCurrency($attributes));
-            $amount = str($value)->replaceMatches("/[^0-9\.]/", '')->replace([',', '.'], '');
-            $money = Money::ofMinor((string) $amount, $currency, null, RoundingMode::HALF_EVEN);
-        }else{
+            preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[\d,\.]*)/", $value, $matches);
+
+            $currencyCode = Arr::get($matches, 'currency', $this->getMoneyCurrency($attributes));
+            $currency = rescue(fn () => Currency::of($currencyCode), $this->getMoneyCurrency($attributes));
+
+            $amount = str_replace(',', '', Arr::get($matches, 'amount', '0'));
+
+            $money =  Money::of($amount, $currency, null, RoundingMode::HALF_EVEN);
+        } else {
             throw new Exception(get_class($this) . " Can not parse value of type: " . gettype($value));
         }
 
