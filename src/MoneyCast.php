@@ -38,7 +38,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
     /**
      * Cast the given value.
      * Money is stored as integer and reprensent minor value including decimals
-     * 
+     *
      * @param  \Illuminate\Database\Eloquent\Model  $model
      * @param  string  $key
      * @param  mixed  $value
@@ -94,9 +94,9 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 
             $amount = str_replace(',', '', Arr::get($matches, 'amount', '0'));
 
-            $money =  Money::of($amount, $currency, null, RoundingMode::HALF_EVEN);
+            $money = Money::of($amount, $currency, null, RoundingMode::HALF_EVEN);
         } else {
-            throw new Exception(get_class($this) . " Can not parse value of type: " . gettype($value));
+            throw new Exception(get_class($this).' Can not parse value of type: '.gettype($value));
         }
 
         return [
