@@ -74,7 +74,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      */
     public function set($model, $key, $value, $attributes)
     {
-        if ($value === null || $value === "") {
+        if ($value === null || $value === '') {
             return [$key => null];
         }
 
@@ -96,7 +96,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 
             $money = Money::of($amount, $currency, null, RoundingMode::HALF_EVEN);
         } else {
-            throw new Exception(get_class($this) . ' Can not parse value of type: ' . gettype($value));
+            throw new Exception(get_class($this).' Can not parse value of type: '.gettype($value));
         }
 
         return [
