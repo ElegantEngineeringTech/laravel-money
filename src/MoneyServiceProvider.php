@@ -16,6 +16,7 @@ class MoneyServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('laravel-money')
+            ->hasTranslations()
             ->hasConfigFile();
     }
 }

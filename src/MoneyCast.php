@@ -2,10 +2,8 @@
 
 namespace Finller\Money;
 
-use Brick\Math\RoundingMode;
 use Brick\Money\Currency;
 use Brick\Money\Money;
-use Exception;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes;
 use Illuminate\Support\Arr;
@@ -74,34 +72,11 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      */
     public function set($model, $key, $value, $attributes)
     {
-        if ($value === null || $value === "") {
-            return [$key => null];
-        }
-
-        if ($value instanceof Money) {
-            $money = $value;
-        } elseif (is_int($value)) {
-            $money = Money::of($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
-        } elseif (is_float($value)) {
-            $money = Money::of($value, $this->getMoneyCurrency($attributes), null, RoundingMode::HALF_EVEN);
-        } elseif (is_string($value)) {
-            preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[\d,\.]*)/", $value, $matches);
-
-            $currencyCode = Arr::get($matches, 'currency');
-            $currency = $currencyCode ?
-                rescue(fn () => Currency::of($currencyCode), $this->getMoneyCurrency($attributes)) :
-                $this->getMoneyCurrency($attributes);
-
-            $amount = str_replace(',', '', Arr::get($matches, 'amount', '0'));
-
-            $money = Money::of($amount, $currency, null, RoundingMode::HALF_EVEN);
-        } else {
-            throw new Exception(get_class($this) . ' Can not parse value of type: ' . gettype($value));
-        }
+        $money = MoneyParser::parse($value, $this->getMoneyCurrency($attributes));
 
         return [
-            $key => $money->getMinorAmount()->toInt(),
-            $this->currency => $money->getCurrency()->getCurrencyCode(),
+            $key => $money?->getMinorAmount()->toInt(),
+            $this->currency => $money?->getCurrency()->getCurrencyCode(),
         ];
     }
 
