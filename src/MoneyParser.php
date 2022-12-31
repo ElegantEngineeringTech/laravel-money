@@ -10,10 +10,9 @@ use Illuminate\Support\Arr;
 
 class MoneyParser
 {
-
     public static function parse(mixed $value, string $currency): ?Money
     {
-        if ($value === null || $value === "") {
+        if ($value === null || $value === '') {
             return null;
         }
 
@@ -40,6 +39,6 @@ class MoneyParser
             return Money::of($amount, $currency, null, RoundingMode::HALF_EVEN);
         }
 
-        throw new Exception('Invalid money value of type ' . gettype($value));
+        throw new Exception('Invalid money value of type '.gettype($value));
     }
 }
