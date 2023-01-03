@@ -19,7 +19,7 @@ class PositiveOrZeroMoney implements InvokableRule
     {
         try {
             $money = MoneyParser::parse($value, config('money.default_currency'));
-            if (!$money->isPositiveOrZero()) {
+            if (! $money->isPositiveOrZero()) {
                 $fail('money::validation.money_positive_or_zero')->translate();
             }
         } catch (\Throwable $th) {

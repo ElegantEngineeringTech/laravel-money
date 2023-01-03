@@ -2,7 +2,6 @@
 
 namespace Finller\Money\Rules;
 
-use Brick\Money\Money;
 use Finller\Money\MoneyParser;
 use Illuminate\Contracts\Validation\InvokableRule;
 

@@ -2,11 +2,10 @@
 
 namespace Finller\Money;
 
+use Exception;
 use Brick\Math\RoundingMode;
 use Brick\Money\Currency;
-use Brick\Money\Exception\UnknownCurrencyException;
 use Brick\Money\Money;
-use Exception;
 use Illuminate\Support\Arr;
 
 class MoneyParser
