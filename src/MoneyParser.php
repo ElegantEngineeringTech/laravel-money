@@ -2,15 +2,14 @@
 
 namespace Finller\Money;
 
-use Exception;
 use Brick\Math\RoundingMode;
 use Brick\Money\Currency;
 use Brick\Money\Money;
+use Exception;
 use Illuminate\Support\Arr;
 
 class MoneyParser
 {
-
     public static function parse(mixed $value, string $currency): ?Money
     {
         if ($value === null) {
@@ -30,7 +29,7 @@ class MoneyParser
         }
 
         if (is_string($value)) {
-            if (trim($value) === "") {
+            if (trim($value) === '') {
                 return null;
             }
 
@@ -46,7 +45,7 @@ class MoneyParser
             return Money::of($amount, $currencyInstance, null, RoundingMode::HALF_EVEN);
         }
 
-        throw new Exception('Invalid money value of type ' . gettype($value));
+        throw new Exception('Invalid money value of type '.gettype($value));
     }
 
     protected static function parseFromString(string $value): array
