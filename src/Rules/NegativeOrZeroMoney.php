@@ -2,20 +2,18 @@
 
 namespace Finller\Money\Rules;
 
+use Closure;
 use Finller\Money\MoneyParser;
-use Illuminate\Contracts\Validation\InvokableRule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
-class NegativeOrZeroMoney implements InvokableRule
+class NegativeOrZeroMoney implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  string  $attribute
-     * @param  mixed  $value
      * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
-     * @return void
      */
-    public function __invoke($attribute, $value, $fail)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         try {
             $money = MoneyParser::parse($value, config('money.default_currency'));

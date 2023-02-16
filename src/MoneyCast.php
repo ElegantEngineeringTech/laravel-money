@@ -6,6 +6,7 @@ use Brick\Money\Currency;
 use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 class MoneyCast implements CastsAttributes, SerializesCastableAttributes
@@ -16,9 +17,6 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      */
     protected ?string $currency;
 
-    /**
-     * @param  string|null  $currency
-     */
     public function __construct(?string $currency = null)
     {
         $this->currency = $currency;
@@ -37,13 +35,9 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * Cast the given value.
      * Money is stored as integer and reprensent minor value including decimals
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  array  $attributes
      * @return ?Money
      */
-    public function get($model, $key, $value, $attributes): ?Money
+    public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
         if ($value === null) {
             return null;
@@ -64,13 +58,9 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * USD 10.00 => $10.00
      * USD 1,000 => $1000 "," will be ignored
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
      * @param  null|int|float|string|Money  $value
-     * @param  array  $attributes
-     * @return array
      */
-    public function set($model, $key, $value, $attributes)
+    public function set(Model $model, string $key, mixed $value, array $attributes): array
     {
         $money = MoneyParser::parse($value, $this->getMoneyCurrency($attributes));
 
@@ -82,14 +72,8 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 
     /**
      * Get the serialized representation of the value.
-     *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
-     * @param  mixed  $value
-     * @param  array  $attributes
-     * @return mixed
      */
-    public function serialize($model, string $key, $value, array $attributes)
+    public function serialize(Model $model, string $key, mixed $value, array $attributes): string
     {
         return (string) $value;
     }
