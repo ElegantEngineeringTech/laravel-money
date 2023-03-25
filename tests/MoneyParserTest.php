@@ -13,14 +13,14 @@ it('consider empty string as null value', function () {
 });
 
 it('can parse int money', function (string $currency, int $value, int $expected) {
-    expect(MoneyParser::parse($value, $currency))->toCost(Money::ofMinor($expected, $currency));
+    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $currency)->getAmount()->toFloat());
 })->with([
     ['EUR', 100, 10000],
     ['EUR', 1123, 112300],
 ]);
 
 it('can parse float money', function (string $currency, float $value, int $expected) {
-    expect(MoneyParser::parse($value, $currency))->toCost(Money::ofMinor($expected, $currency));
+    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $currency)->getAmount()->toFloat());
 })->with([
     ['EUR', 100.10, 10010],
     ['EUR', 11.23, 1123],
@@ -28,7 +28,7 @@ it('can parse float money', function (string $currency, float $value, int $expec
 ]);
 
 it('can parse string money', function (string $currency, string $value, int $expected, ?string $expectedCurency = null) {
-    expect(MoneyParser::parse($value, $currency))->toCost(Money::ofMinor($expected, $expectedCurency ?? $currency));
+    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $expectedCurency ?? $currency)->getAmount()->toFloat());
 })->with([
     ['EUR', '1', 100],
     ['EUR', '100', 10000],
