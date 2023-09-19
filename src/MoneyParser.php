@@ -51,7 +51,7 @@ class MoneyParser
     protected static function parseFromString(string $value): array
     {
         // not found currency or amount will return "" and not null
-        preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[\d,\.]*)/", $value, $matches);
+        preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[-\d,\.]*)/", $value, $matches);
 
         return array_filter($matches);
     }
