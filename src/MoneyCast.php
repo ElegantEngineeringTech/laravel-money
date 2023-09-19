@@ -17,7 +17,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      */
     protected ?string $currency;
 
-    public function __construct(?string $currency = null)
+    public function __construct(string $currency = null)
     {
         $this->currency = $currency;
     }
