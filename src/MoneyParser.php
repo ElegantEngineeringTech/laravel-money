@@ -35,6 +35,10 @@ class MoneyParser
 
             $matches = static::parseFromString($value);
 
+            if (empty($matches)) {
+                return null;
+            }
+
             /** @var string $parsedCurrencyCode */
             $parsedCurrencyCode = Arr::get($matches, 'currency', $currency);
             $currencyInstance = Currency::of($parsedCurrencyCode);
@@ -45,7 +49,7 @@ class MoneyParser
             return Money::of($amount, $currencyInstance, null, RoundingMode::HALF_EVEN);
         }
 
-        throw new Exception('Invalid money value of type '.gettype($value));
+        throw new Exception('Invalid money value of type ' . gettype($value));
     }
 
     protected static function parseFromString(string $value): array

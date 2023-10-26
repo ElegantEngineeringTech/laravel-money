@@ -17,7 +17,7 @@ class NegativeOrZeroMoney implements ValidationRule
     {
         try {
             $money = MoneyParser::parse($value, config('money.default_currency'));
-            if (! $money->isNegativeOrZero()) {
+            if (!$money?->isNegativeOrZero()) {
                 $fail('money::validation.money_negative_or_zero')->translate();
             }
         } catch (\Throwable $th) {

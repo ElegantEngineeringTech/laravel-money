@@ -8,6 +8,10 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class ValidMoney implements ValidationRule
 {
+    function __construct(public bool $nullable = true, public ?int $min = null, public ?int $max = null)
+    {
+        // 
+    }
     /**
      * Run the validation rule.
      *
@@ -17,6 +21,26 @@ class ValidMoney implements ValidationRule
     {
         try {
             $money = MoneyParser::parse($value, config('money.default_currency'));
+
+            if (!is_null($value) && is_null($money)) {
+                $fail('money::validation.money')->translate();
+            }
+
+            if (!$this->nullable && is_null($money)) {
+                $fail('money::validation.money')->translate();
+            }
+
+            if (!is_null($this->min) && $money->isLessThan($this->min)) {
+                $fail('money::validation.money_min')->translate([
+                    'value' => $this->min
+                ]);
+            }
+
+            if (!is_null($this->max) && $money->isGreaterThan($this->max)) {
+                $fail('money::validation.money_max')->translate([
+                    'value' => $this->max
+                ]);
+            }
         } catch (\Throwable $th) {
             $fail('money::validation.money')->translate();
         }
