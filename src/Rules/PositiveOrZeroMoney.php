@@ -8,7 +8,6 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class PositiveOrZeroMoney implements ValidationRule
 {
-
     /**
      * Run the validation rule.
      *
@@ -18,7 +17,7 @@ class PositiveOrZeroMoney implements ValidationRule
     {
         try {
             $money = MoneyParser::parse($value, config('money.default_currency'));
-            if (!$money?->isPositiveOrZero()) {
+            if (! $money?->isPositiveOrZero()) {
                 $fail('money::validation.money_positive_or_zero')->translate();
             }
         } catch (\Throwable $th) {

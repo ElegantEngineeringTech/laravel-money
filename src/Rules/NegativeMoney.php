@@ -6,7 +6,6 @@ use Closure;
 use Finller\Money\MoneyParser;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-
 class NegativeMoney implements ValidationRule
 {
     /**
@@ -18,7 +17,7 @@ class NegativeMoney implements ValidationRule
     {
         try {
             $money = MoneyParser::parse($value, config('money.default_currency'));
-            if (!$money?->isNegative()) {
+            if (! $money?->isNegative()) {
                 $fail('money::validation.money_negative')->translate();
             }
         } catch (\Throwable $th) {

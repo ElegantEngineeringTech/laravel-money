@@ -49,7 +49,7 @@ class MoneyParser
             return Money::of($amount, $currencyInstance, null, RoundingMode::HALF_EVEN);
         }
 
-        throw new Exception('Invalid money value of type ' . gettype($value));
+        throw new Exception('Invalid money value of type '.gettype($value));
     }
 
     protected static function parseFromString(string $value): array
