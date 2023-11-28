@@ -20,7 +20,7 @@ it('validate money', function ($amount, bool $expected, int $min = null, int $ma
     $invalid = $validator->invalid();
     $valid = $validator->valid();
 
-    expect(Arr::has($invalid, 'amount'))->tobe(!$expected);
+    expect(Arr::has($invalid, 'amount'))->tobe(! $expected);
     expect(Arr::has($valid, 'amount'))->tobe($expected);
 })->with([
     [null, true],
