@@ -1,8 +1,8 @@
 # Wrapper for Brick/Money
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/finller/laravel-money.svg?style=flat-square)](https://packagist.org/packages/finller/laravel-money)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/finller/laravel-money/run-tests?label=tests)](https://github.com/finller/laravel-money/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/finller/laravel-money/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/finller/laravel-money/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/finller/laravel-money/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/finller/laravel-money/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/finller/laravel-money/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/finller/laravel-money/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/finller/laravel-money.svg?style=flat-square)](https://packagist.org/packages/finller/laravel-money)
 
 Easily use Brick/Money in your laravel App.
@@ -64,8 +64,8 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [Quentin Gabriele](https://github.com/QuentinGab)
-- [All Contributors](../../contributors)
+-   [Quentin Gabriele](https://github.com/QuentinGab)
+-   [All Contributors](../../contributors)
 
 ## License
 
