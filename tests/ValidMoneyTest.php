@@ -4,7 +4,7 @@ use Finller\Money\Rules\ValidMoney;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
-it('validate money', function ($amount, bool $expected, int $min = null, int $max = null, bool $nullable = true) {
+it('validate money', function ($amount, bool $expected, ?int $min = null, ?int $max = null, bool $nullable = true) {
 
     $rule = new ValidMoney(min: $min, max: $max, nullable: $nullable);
 

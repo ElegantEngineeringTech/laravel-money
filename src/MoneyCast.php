@@ -13,11 +13,11 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 {
     /**
      * The currency code or the model attribute holding the currency code.
-     * used like: MoneyCast::class.':currency'
+     * When used like: MoneyCast::class.':currency', $currency = 'currency'
      */
     protected ?string $currency;
 
-    public function __construct(string $currency = null)
+    public function __construct(?string $currency = null)
     {
         $this->currency = $currency;
     }

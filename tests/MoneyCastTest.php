@@ -3,7 +3,7 @@
 use Brick\Money\Money;
 use Finller\Money\Tests\TestModel;
 
-it('can prepare money represented as integer', function () {
+it('can cast money represented as integer', function () {
     $model = new TestModel([
         'currency' => 'EUR',
         'price' => 1234,
@@ -19,7 +19,7 @@ it('can prepare money represented as integer', function () {
     expect($model->price_default_currency->getCurrency()->getCurrencyCode())->toBe(config('money.default_currency'));
 });
 
-it('can prepare money represented as float', function () {
+it('can cast money represented as float', function () {
     $model = new TestModel([
         'currency' => 'EUR',
         'price' => 1234.56,
@@ -35,7 +35,7 @@ it('can prepare money represented as float', function () {
     expect($model->price_default_currency->getCurrency()->getCurrencyCode())->toBe(config('money.default_currency'));
 });
 
-it('can prepare money represented as serialized string', function ($currency, $price, $expected) {
+it('can cast money represented as serialized string', function ($currency, $price, $expected) {
     $model = new TestModel([
         'currency' => $currency,
         'price' => $price,
@@ -49,4 +49,19 @@ it('can prepare money represented as serialized string', function ($currency, $p
     ['EUR', 'EUR 1234.56', 1234.56],
     ['EUR', '1234', 1234.0],
     ['EUR', 'EUR 1,234', 1234.0], // ignore ","
+]);
+
+it('can cast money represented as serialized string without currency attribute', function ($currency, $price, $expected) {
+    $model = new TestModel([
+        'price' => $price,
+    ]);
+
+    expect($model->price)->toBeInstanceOf(Money::class);
+    expect($model->price->getAmount()->toFloat())->toBe($expected);
+    expect($model->price->getCurrency()->getCurrencyCode())->toBe($currency);
+})->with([
+    ['EUR', 'EUR 1,234.56', 1234.56],
+    ['EUR', 'EUR 1234.56', 1234.56],
+    ['USD', '1234', 1234.0],
+    ['GBP', 'GBP 1,234', 1234.0], // ignore ","
 ]);
