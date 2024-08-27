@@ -1,9 +1,9 @@
 <?php
 
-namespace Finller\Money\Tests;
+namespace Elegantly\Money\Tests;
 
 use Brick\Money\Money;
-use Finller\Money\MoneyCast;
+use Elegantly\Money\MoneyCast;
 use Illuminate\Database\Eloquent\Model;
 
 /**

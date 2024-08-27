@@ -1,15 +1,18 @@
 <?php
 
-namespace Finller\Money\Rules;
+namespace Elegantly\Money\Rules;
 
 use Closure;
-use Finller\Money\MoneyParser;
+use Elegantly\Money\MoneyParser;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class ValidMoney implements ValidationRule
 {
-    public function __construct(public bool $nullable = true, public ?int $min = null, public ?int $max = null)
-    {
+    public function __construct(
+        public bool $nullable = true,
+        public ?int $min = null,
+        public ?int $max = null
+    ) {
         //
     }
 
@@ -20,30 +23,32 @@ class ValidMoney implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        try {
-            $money = MoneyParser::parse($value, config('money.default_currency'));
+        /** @var string $defaultCurrency */
+        $defaultCurrency = config('money.default_currency');
+        $money = MoneyParser::parse($value, $defaultCurrency);
 
-            if (! is_null($value) && is_null($money)) {
-                $fail('money::validation.money')->translate();
-            }
+        if (! $this->nullable && $money === null) {
+            $fail('money::validation.money')->translate();
+        }
 
-            if (! $this->nullable && is_null($money)) {
-                $fail('money::validation.money')->translate();
-            }
-
-            if (! is_null($this->min) && $money->isLessThan($this->min)) {
+        if ($money) {
+            if (
+                $this->min !== null &&
+                $money->isLessThan($this->min)
+            ) {
                 $fail('money::validation.money_min')->translate([
                     'value' => $this->min,
                 ]);
             }
 
-            if (! is_null($this->max) && $money->isGreaterThan($this->max)) {
+            if (
+                $this->max !== null &&
+                $money->isGreaterThan($this->max)
+            ) {
                 $fail('money::validation.money_max')->translate([
                     'value' => $this->max,
                 ]);
             }
-        } catch (\Throwable $th) {
-            $fail('money::validation.money')->translate();
         }
     }
 }

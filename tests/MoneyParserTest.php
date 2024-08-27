@@ -1,7 +1,7 @@
 <?php
 
 use Brick\Money\Money;
-use Finller\Money\MoneyParser;
+use Elegantly\Money\MoneyParser;
 
 it('do nothing on null value', function () {
     expect(MoneyParser::parse(null, 'EUR'))->toBeNull();

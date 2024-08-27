@@ -1,7 +1,7 @@
 <?php
 
 use Brick\Money\Money;
-use Finller\Money\Tests\TestModel;
+use Elegantly\Money\Tests\TestModel;
 
 it('can cast money represented as integer', function () {
     $model = new TestModel([
@@ -51,7 +51,7 @@ it('can cast money represented as serialized string', function ($currency, $pric
     ['EUR', 'EUR 1,234', 1234.0], // ignore ","
 ]);
 
-it('can cast money represented as serialized string without currency attribute', function ($currency, $price, $expected) {
+it('can cast money represented as string without currency', function ($currency, $price, $expected) {
     $model = new TestModel([
         'price' => $price,
     ]);
@@ -63,5 +63,5 @@ it('can cast money represented as serialized string without currency attribute',
     ['EUR', 'EUR 1,234.56', 1234.56],
     ['EUR', 'EUR 1234.56', 1234.56],
     ['USD', '1234', 1234.0],
-    ['GBP', 'GBP 1,234', 1234.0], // ignore ","
+    ['GBP', 'GBP 1,234', 1234.0],
 ]);

@@ -1,6 +1,6 @@
 <?php
 
-use Finller\Money\Rules\ValidMoney;
+use Elegantly\Money\Rules\ValidMoney;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
@@ -24,7 +24,7 @@ it('validate money', function ($amount, bool $expected, ?int $min = null, ?int $
     expect(Arr::has($valid, 'amount'))->tobe($expected);
 })->with([
     [null, true],
-    ['not money', false],
+    ['not money', false, null, null, false],
     ['EUR 100', true],
     ['EUR 10', true, 10, 20],
     ['EUR 20', true, 10, 20],
