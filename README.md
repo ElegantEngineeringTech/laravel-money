@@ -31,7 +31,6 @@ This is the content of the published config file:
 
 ```php
 return [
-    'locale' => config('app.locale', 'en_US'),
     'default_currency' => 'USD',
 ];
 ```
