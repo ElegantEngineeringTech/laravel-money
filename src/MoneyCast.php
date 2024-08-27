@@ -9,31 +9,54 @@ use Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
+/**
+ * @implements CastsAttributes<null|Money, array<string, int|string>>
+ */
 class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 {
     /**
      * The currency code or the model attribute holding the currency code.
      * When used like: MoneyCast::class.':currency', $currency = 'currency'
      */
-    protected ?string $currency;
-
-    public function __construct(?string $currency = null)
-    {
-        $this->currency = $currency;
+    public function __construct(
+        protected ?string $currencyOrAttribute = null
+    ) {
+        //
     }
 
-    protected function getMoneyCurrency(array $attributes): Currency
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    protected function getCurrencyAttribute(array $attributes): ?string
     {
-        if ($this->currency && $modelDefinedCurrency = Arr::get($attributes, $this->currency)) {
-            return Currency::of($modelDefinedCurrency);
+        if ($this->currencyOrAttribute) {
+            /** @var ?string $currrency */
+            $currrency = Arr::get($attributes, $this->currencyOrAttribute);
+
+            return $currrency;
         }
 
-        return Currency::of(config('money.default_currency'));
+        return null;
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
+    protected function getCurrency(array $attributes): Currency
+    {
+        /** @var string $default */
+        $default = config('money.default_currency');
+
+        return Currency::of(
+            $this->getCurrencyAttribute($attributes) ?: $default
+        );
     }
 
     /**
      * Cast the given value.
      * Money is stored as integer and reprensent minor value including decimals
+     *
+     * @param  ?int  $value
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
@@ -41,7 +64,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
             return null;
         }
 
-        return Money::ofMinor($value, $this->getMoneyCurrency($attributes));
+        return Money::ofMinor($value, $this->getCurrency($attributes));
     }
 
     /**
@@ -57,22 +80,33 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * USD 1,000 => $1000 "," will be ignored
      *
      * @param  null|int|float|string|Money  $value
+     * @return array<string, int|string|null>
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): array
     {
-        $money = MoneyParser::parse($value, $this->getMoneyCurrency($attributes));
+        $money = MoneyParser::parse($value, $this->getCurrency($attributes));
 
-        return [
-            $key => $money?->getMinorAmount()->toInt(),
-            $this->currency => $money?->getCurrency()->getCurrencyCode(),
-        ];
+        if ($this->currencyOrAttribute) {
+            return [
+                $key => $money?->getMinorAmount()->toInt(),
+                $this->currencyOrAttribute => $money?->getCurrency()->getCurrencyCode(),
+            ];
+        }
+
+        return [$key => $money?->getMinorAmount()->toInt()];
     }
 
     /**
-     * Get the serialized representation of the value.
+     * @param  ?Money  $value
+     * @param  array<string, mixed>  $attributes
+     * @return ?string
      */
-    public function serialize(Model $model, string $key, mixed $value, array $attributes): string
+    public function serialize(Model $model, string $key, mixed $value, array $attributes): ?string
     {
+        if ($value === null) {
+            return $value;
+        }
+
         return (string) $value;
     }
 }

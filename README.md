@@ -1,4 +1,4 @@
-# Fluent Integration of Brick/Money for Laravel
+# Elegant Integration of Brick/Money for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/finller/laravel-money.svg?style=flat-square)](https://packagist.org/packages/finller/laravel-money)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/finller/laravel-money/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/finller/laravel-money/actions?query=workflow%3Arun-tests+branch%3Amain)
@@ -9,9 +9,9 @@ Easily use Brick/Money in your Laravel app.
 
 ## Features
 
--   Cast model property to `Brick\Money\Money`
--   Parse strings to `Brick\Money\Money`
--   Set of validation rules for money
+-   MoneyCast: Cast your model attributes to `Brick\Money\Money`
+-   MoneyParse: Parse strings and other types to `Brick\Money\Money`
+-   ValidMoney: Money validation rule
 
 ## Installation
 
@@ -37,11 +37,7 @@ return [
 
 ## Usage
 
-### Casting a Model Property to a Money Instance
-
-You can cast a model property stored as an integer to a `Brick\Money\Money` instance.
-
-#### Casting Using a Column as Currency (Recommended)
+### Casting Using a Column as Currency (Recommended)
 
 If you store the currency in a table column alongside the amount value, you can specify the column name like this:
 
@@ -61,7 +57,7 @@ class Invoice extends Model {
 }
 ```
 
-#### Casting Using a Defined Currency
+### Casting Using a Defined Currency
 
 You can cast your money to a specific currency using the currency code instead of the column name.
 
@@ -101,9 +97,7 @@ MoneyParser::parse('1', 'EUR'); // 1.00€
 MoneyParser::parse('100.10', 'EUR'); // 100.10€
 ```
 
-### Validation Rules
-
-The package includes some useful validation rules.
+### Validation Rule
 
 Using `ValidMoney` within Livewire:
 

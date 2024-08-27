@@ -3,15 +3,15 @@
 namespace Finller\Money;
 
 use Brick\Math\RoundingMode;
-use Brick\Money\Currency;
 use Brick\Money\Money;
-use Exception;
-use Illuminate\Support\Arr;
 
 class MoneyParser
 {
-    public static function parse(mixed $value, string $currency): ?Money
-    {
+    public static function parse(
+        mixed $value,
+        string $currency
+    ): ?Money {
+
         if ($value === null) {
             return null;
         }
@@ -29,34 +29,40 @@ class MoneyParser
         }
 
         if (is_string($value)) {
-            if (trim($value) === '') {
-                return null;
-            }
-
-            $matches = static::parseFromString($value);
-
-            if (empty($matches)) {
-                return null;
-            }
-
-            /** @var string $parsedCurrencyCode */
-            $parsedCurrencyCode = Arr::get($matches, 'currency', $currency);
-            $currencyInstance = Currency::of($parsedCurrencyCode);
-
-            /** @var string $amount */
-            $amount = str_replace(',', '', Arr::get($matches, 'amount', '0'));
-
-            return Money::of($amount, $currencyInstance, null, RoundingMode::HALF_EVEN);
+            return static::parseString($value, $currency);
         }
 
-        throw new Exception('Invalid money value of type '.gettype($value));
+        return null;
     }
 
-    protected static function parseFromString(string $value): array
+    protected static function parseString(string $value, string $currency): ?Money
     {
-        // not found currency or amount will return "" and not null
-        preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[-\d,\.]*)/", $value, $matches);
 
-        return array_filter($matches);
+        if (blank($value)) {
+            return null;
+        }
+
+        /**
+         * Not found currency or amount will return "" and not null
+         */
+        preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[-\d,\.]*)/", $value, $matches);
+        /**
+         * @var array{ currency: string, amount: string } $matches
+         */
+        $amount = str_replace(',', '', $matches['amount']);
+
+        if (! $amount && ! $matches['currency']) {
+            return null;
+        }
+
+        if (! $amount) {
+            return Money::of(0, $matches['currency']);
+        }
+
+        return Money::of(
+            amount: $amount,
+            currency: $matches['currency'] ?: $currency,
+            roundingMode: RoundingMode::HALF_EVEN
+        );
     }
 }
