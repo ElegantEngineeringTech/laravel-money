@@ -1,8 +1,8 @@
 <?php
 
-namespace Finller\Money\Tests;
+namespace Elegantly\Money\Tests;
 
-use Finller\Money\MoneyServiceProvider;
+use Elegantly\Money\MoneyServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra

@@ -1,9 +1,9 @@
 <?php
 
-namespace Finller\Money\Rules;
+namespace Elegantly\Money\Rules;
 
 use Closure;
-use Finller\Money\MoneyParser;
+use Elegantly\Money\MoneyParser;
 use Illuminate\Contracts\Validation\ValidationRule;
 
 class ValidMoney implements ValidationRule

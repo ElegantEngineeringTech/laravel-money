@@ -1,7 +1,7 @@
 <?php
 
 use Brick\Money\Money;
-use Finller\Money\Tests\TestModel;
+use Elegantly\Money\Tests\TestModel;
 
 it('can cast money represented as integer', function () {
     $model = new TestModel([

@@ -1,6 +1,6 @@
 <?php
 
-use Finller\Money\Rules\ValidMoney;
+use Elegantly\Money\Rules\ValidMoney;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 

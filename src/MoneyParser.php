@@ -1,6 +1,6 @@
 <?php
 
-namespace Finller\Money;
+namespace Elegantly\Money;
 
 use Brick\Math\RoundingMode;
 use Brick\Money\Money;

@@ -1,12 +1,13 @@
 {
-    "name": "finller/laravel-money",
-    "description": "Wrapper for Brick/Money",
+    "name": "elegantly/laravel-money",
+    "description": "Use Brick/Money in your Laravel app",
     "keywords": [
-        "finller",
+        "elegantly",
         "laravel",
-        "laravel-money"
+        "laravel-money",
+        "money"
     ],
-    "homepage": "https://github.com/finller/laravel-money",
+    "homepage": "https://github.com/ElegantEngineeringTech/laravel-money",
     "license": "MIT",
     "authors": [
         {
@@ -36,12 +37,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Finller\\Money\\": "src"
+            "Elegantly\\Money\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Finller\\Money\\Tests\\": "tests"
+            "Elegantly\\Money\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -61,11 +62,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Finller\\Money\\MoneyServiceProvider"
-            ],
-            "aliases": {
-                "Money": "Finller\\Money\\Facades\\Money"
-            }
+                "Elegantly\\Money\\MoneyServiceProvider"
+            ]
         }
     },
     "minimum-stability": "dev",

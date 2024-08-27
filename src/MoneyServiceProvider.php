@@ -1,6 +1,6 @@
 <?php
 
-namespace Finller\Money;
+namespace Elegantly\Money;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
