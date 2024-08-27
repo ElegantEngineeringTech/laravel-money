@@ -34,8 +34,6 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
     /**
      * Cast the given value.
      * Money is stored as integer and reprensent minor value including decimals
-     *
-     * @return ?Money
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): ?Money
     {
