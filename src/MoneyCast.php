@@ -100,12 +100,12 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * @param  ?Money  $value
      * @param  array<string, mixed>  $attributes
      */
-    public function serialize(Model $model, string $key, mixed $value, array $attributes): ?string
+    public function serialize(Model $model, string $key, mixed $value, array $attributes): ?int
     {
         if ($value === null) {
             return $value;
         }
 
-        return (string) $value;
+        return $value->getMinorAmount()->toInt();
     }
 }
