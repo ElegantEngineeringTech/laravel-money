@@ -18,7 +18,7 @@ Easily use Brick/Money in your Laravel app.
 ### Breaking cahnge
 
 The namespace has been updated: from `Finller\Money` to `Elegantly\Money`.
-You can simple do a search+replace.
+You can simply do a search+replace.
 
 ## Installation
 
@@ -49,7 +49,7 @@ return [
 If you store the currency in a table column alongside the amount value, you can specify the column name like this:
 
 ```php
-use Elegantly\MoneyCast;
+use Elegantly\Money\MoneyCast;
 
 /**
  * @property ?Money $price
@@ -69,7 +69,7 @@ class Invoice extends Model {
 You can cast your money to a specific currency using the currency code instead of the column name.
 
 ```php
-use Elegantly\MoneyCast;
+use Elegantly\Money\MoneyCast;
 
 /**
  * @property ?Money $price
