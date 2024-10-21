@@ -13,7 +13,9 @@ use Illuminate\Database\Eloquent\Model;
  */
 class TestModel extends Model
 {
-    protected $fillable = ['price', 'currency', 'price_default_currency'];
+    protected $table = 'tests';
+
+    protected $guarded = [];
 
     protected $casts = [
         'price' => MoneyCast::class.':currency',

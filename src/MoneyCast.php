@@ -86,10 +86,10 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
     {
         $money = MoneyParser::parse($value, $this->getCurrency($attributes));
 
-        if ($this->currencyOrAttribute) {
+        if ($money && $this->currencyOrAttribute) {
             return [
-                $key => $money?->getMinorAmount()->toInt(),
-                $this->currencyOrAttribute => $money?->getCurrency()->getCurrencyCode(),
+                $key => $money->getMinorAmount()->toInt(),
+                $this->currencyOrAttribute => $money->getCurrency()->getCurrencyCode(),
             ];
         }
 
@@ -100,12 +100,12 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * @param  ?Money  $value
      * @param  array<string, mixed>  $attributes
      */
-    public function serialize(Model $model, string $key, mixed $value, array $attributes): ?int
+    public function serialize(Model $model, string $key, mixed $value, array $attributes): ?float
     {
         if ($value === null) {
             return $value;
         }
 
-        return $value->getMinorAmount()->toInt();
+        return $value->getAmount()->toFloat();
     }
 }

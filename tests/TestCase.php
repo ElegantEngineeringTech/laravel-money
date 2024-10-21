@@ -3,6 +3,7 @@
 namespace Elegantly\Money\Tests;
 
 use Elegantly\Money\MoneyServiceProvider;
+use Illuminate\Database\Schema\Blueprint;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -21,9 +22,14 @@ class TestCase extends Orchestra
 
     public function getEnvironmentSetUp($app)
     {
-        /*
-        $migration = include __DIR__.'/../database/migrations/create_laravel-money_table.php.stub';
-        $migration->up();
-        */
+        $app['db']->connection()->getSchemaBuilder()->create('tests', function (Blueprint $table) {
+            $table->increments('id');
+
+            $table->integer('price_default_currency')->nullable();
+            $table->integer('price')->nullable();
+            $table->string('currency')->nullable();
+
+            $table->timestamps();
+        });
     }
 }
