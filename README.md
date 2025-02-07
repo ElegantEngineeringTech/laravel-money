@@ -13,13 +13,6 @@ Easily use Brick/Money in your Laravel app.
 -   MoneyParse: Parse strings and other types to `Brick\Money\Money`
 -   ValidMoney: Money validation rule
 
-## Upgrading to V2
-
-### Breaking cahnge
-
-The namespace has been updated: from `Finller\Money` to `Elegantly\Money`.
-You can simply do a search+replace.
-
 ## Installation
 
 You can install the package via Composer:
