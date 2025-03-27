@@ -3,55 +3,7 @@
 use Brick\Money\Money;
 use Elegantly\Money\Tests\TestModel;
 
-it('can cast money represented as string', function () {
-    $model = new TestModel([
-        'currency' => 'EUR',
-        'price' => '1234',
-        'price_default_currency' => '9876',
-    ]);
-
-    expect($model->price)->toBeInstanceOf(Money::class);
-    expect($model->price->getMinorAmount()->toInt())->toBe(123400);
-    expect($model->price->getCurrency()->getCurrencyCode())->toBe('EUR');
-
-    expect($model->price_default_currency)->toBeInstanceOf(Money::class);
-    expect($model->price_default_currency->getMinorAmount()->toInt())->toBe(987600);
-    expect($model->price_default_currency->getCurrency()->getCurrencyCode())->toBe(config('money.default_currency'));
-});
-
-it('can cast money represented as integer', function () {
-    $model = new TestModel([
-        'currency' => 'EUR',
-        'price' => 1234,
-        'price_default_currency' => 9876,
-    ]);
-
-    expect($model->price)->toBeInstanceOf(Money::class);
-    expect($model->price->getMinorAmount()->toInt())->toBe(123400);
-    expect($model->price->getCurrency()->getCurrencyCode())->toBe('EUR');
-
-    expect($model->price_default_currency)->toBeInstanceOf(Money::class);
-    expect($model->price_default_currency->getMinorAmount()->toInt())->toBe(987600);
-    expect($model->price_default_currency->getCurrency()->getCurrencyCode())->toBe(config('money.default_currency'));
-});
-
-it('can cast money represented as float', function () {
-    $model = new TestModel([
-        'currency' => 'EUR',
-        'price' => 1234.56,
-        'price_default_currency' => 9876.54,
-    ]);
-
-    expect($model->price)->toBeInstanceOf(Money::class);
-    expect($model->price->getAmount()->toFloat())->toBe(1234.56);
-    expect($model->price->getCurrency()->getCurrencyCode())->toBe('EUR');
-
-    expect($model->price_default_currency)->toBeInstanceOf(Money::class);
-    expect($model->price_default_currency->getAmount()->toFloat())->toBe(9876.54);
-    expect($model->price_default_currency->getCurrency()->getCurrencyCode())->toBe(config('money.default_currency'));
-});
-
-it('can cast money represented as serialized string', function ($currency, $price, $expected) {
+it('can cast integer value to money', function ($currency, $price, $expected) {
     $model = new TestModel([
         'currency' => $currency,
         'price' => $price,
@@ -61,16 +13,68 @@ it('can cast money represented as serialized string', function ($currency, $pric
     expect($model->price->getAmount()->toFloat())->toBe($expected);
     expect($model->price->getCurrency()->getCurrencyCode())->toBe($currency);
 })->with([
-    ['EUR', 'EUR 1,234.56', 1234.56],
-    ['EUR', 'EUR 1234.56', 1234.56],
-    ['EUR', '1234', 1234.0],
-    ['USD', '0', 0.0],
-    ['USD', '10', 10.0],
-    ['USD', '-10', -10.0],
-    ['GBP', 'GBP 1,234', 1234.0], // ignore ","
+    ['EUR', 0, 0.0],
+    ['EUR', 1, 1.0],
+    ['EUR', -1, -1.0],
+    ['EUR', 123, 123.0],
+    ['EUR', -123, -123.0],
+    ['EUR', 1234, 1234.0],
+    ['EUR', -1234, -1234.0],
+    //
+    ['USD', 0, 0.0],
+    ['GBP', 0, 0.0],
+]);
+
+it('can cast money represented as float', function ($currency, $price, $expected) {
+    $model = new TestModel([
+        'currency' => $currency,
+        'price' => $price,
+    ]);
+
+    expect($model->price)->toBeInstanceOf(Money::class);
+    expect($model->price->getAmount()->toFloat())->toBe($expected);
+    expect($model->price->getCurrency()->getCurrencyCode())->toBe($currency);
+})->with([
+    ['EUR', 0.0, 0.0],
+    ['EUR', 1.0, 1.0],
+    ['EUR', -1.0, -1.0],
+    ['EUR', 123.0, 123.00],
+    ['EUR', -123.0, -123.0],
+    ['EUR', 1234.0, 1234.0],
+    ['EUR', -1234.0, -1234.0],
+    ['EUR', 1234.5, 1234.5],
+    ['EUR', -1234.5, -1234.5],
+    ['EUR', 1234.56, 1234.56],
+    ['EUR', -1234.56, -1234.56],
+    //
+    ['USD', 0.0, 0.0],
+    ['GBP', 0.0, 0.0],
 ]);
 
 it('can cast money represented as string without currency', function ($currency, $price, $expected) {
+    $model = new TestModel([
+        'currency' => $currency,
+        'price' => $price,
+    ]);
+
+    expect($model->price)->toBeInstanceOf(Money::class);
+    expect($model->price->getAmount()->toFloat())->toBe($expected);
+    expect($model->price->getCurrency()->getCurrencyCode())->toBe($currency);
+})->with([
+    ['EUR', '0.0', 0.0],
+    ['EUR', '1.0', 1.0],
+    ['EUR', '-1.0', -1.0],
+    ['EUR', '123.0', 123.0],
+    ['EUR', '-123.0', -123.0],
+    ['EUR', '1234.0', 1234.0],
+    ['EUR', '-1234.0', -1234.0],
+    ['EUR', '1234.5', 1234.5],
+    ['EUR', '-1234.5', -1234.5],
+    ['EUR', '1234.56', 1234.56],
+    ['EUR', '-1234.56', -1234.56],
+]);
+
+it('can cast money represented as string with currency', function ($price, $expected, $currency) {
     $model = new TestModel([
         'price' => $price,
     ]);
@@ -79,11 +83,18 @@ it('can cast money represented as string without currency', function ($currency,
     expect($model->price->getAmount()->toFloat())->toBe($expected);
     expect($model->price->getCurrency()->getCurrencyCode())->toBe($currency);
 })->with([
-    ['EUR', 'EUR 1,234.56', 1234.56],
-    ['EUR', 'EUR 1234.56', 1234.56],
-    ['USD', '1234', 1234.0],
-    ['USD', '0', 0.0],
-    ['USD', '10', 10.0],
-    ['USD', '-10', -10.0],
-    ['GBP', 'GBP 1,234', 1234.0], // ignore ","
+    ['EUR 0.0', 0.0, 'EUR'],
+    ['EUR 1.0', 1.0, 'EUR'],
+    ['EUR -1.0', -1.0, 'EUR'],
+    ['EUR 123.0', 123.00, 'EUR'],
+    ['EUR -123.0', -123.0, 'EUR'],
+    ['EUR 1234.0', 1234.0, 'EUR'],
+    ['EUR -1234.0', -1234.0, 'EUR'],
+    ['EUR 1234.5', 1234.5, 'EUR'],
+    ['EUR -1234.5', -1234.5, 'EUR'],
+    ['EUR 1234.56', 1234.56, 'EUR'],
+    ['EUR -1234.56', -1234.56, 'EUR'],
+    // ignore `,`
+    ['GBP 1,234.56', 1234.56, 'GBP'],
+    ['USD -1,234.56', -1234.56, 'USD'],
 ]);
