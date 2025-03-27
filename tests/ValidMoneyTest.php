@@ -24,7 +24,15 @@ it('validate money', function ($amount, bool $expected, ?int $min = null, ?int $
     expect(Arr::has($valid, 'amount'))->tobe($expected);
 })->with([
     [null, true],
+    [0, true],
+    [10, true],
+    [-10, true],
+    ['0', true],
+    ['10', true],
+    ['-10', true],
     ['not money', false, null, null, false],
+    ['EUR -10', true, -10, 10],
+    ['EUR 0', true, -10, 10],
     ['EUR 100', true],
     ['EUR 10', true, 10, 20],
     ['EUR 20', true, 10, 20],

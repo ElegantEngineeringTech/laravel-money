@@ -46,22 +46,17 @@ class MoneyParser
          * Not found currency or amount will return "" and not null
          */
         preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[-\d,\.]*)/", $value, $matches);
-        /**
-         * @var array{ currency: string, amount: string } $matches
-         */
+        /** @var array{ currency: string, amount: string } $matches */
         $amount = str_replace(',', '', $matches['amount']);
+        $currency = $matches['currency'] ?: $currency;
 
-        if (! $amount && ! $matches['currency']) {
+        if (blank($amount)) {
             return null;
-        }
-
-        if (! $amount) {
-            return Money::of(0, $matches['currency']);
         }
 
         return Money::of(
             amount: $amount,
-            currency: $matches['currency'] ?: $currency,
+            currency: $currency,
             roundingMode: RoundingMode::HALF_EVEN
         );
     }

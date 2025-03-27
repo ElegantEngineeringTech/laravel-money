@@ -1,47 +1,86 @@
 <?php
 
-use Brick\Money\Money;
 use Elegantly\Money\MoneyParser;
 
-it('do nothing on null value', function () {
-    expect(MoneyParser::parse(null, 'EUR'))->toBeNull();
-});
-
-it('consider empty string as null value', function () {
-    expect(MoneyParser::parse('', 'EUR'))->toBeNull();
-    expect(MoneyParser::parse(' ', 'EUR'))->toBeNull();
-});
-
-it('can parse int money', function (string $currency, int $value, int $expected) {
-    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $currency)->getAmount()->toFloat());
+it('parses blank value as null', function ($value) {
+    expect(MoneyParser::parse($value, 'EUR'))->toBeNull();
 })->with([
-    ['EUR', 100, 10000],
-    ['EUR', -100, -10000],
-    ['EUR', 1123, 112300],
-    ['EUR', -1123, -112300],
+    [null],
+    [''],
+    [' '],
 ]);
 
-it('can parse float money', function (string $currency, float $value, int $expected) {
-    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $currency)->getAmount()->toFloat());
+it('can parse int money', function (string $currency, int $value, float $expected) {
+    $parsed = MoneyParser::parse($value, $currency);
+
+    expect($parsed->getAmount()->toFloat())->toEqual($expected);
+    expect($parsed->getCurrency()->getCurrencyCode())->toEqual($currency);
 })->with([
-    ['EUR', 100.10, 10010],
-    ['EUR', -100.10, -10010],
-    ['EUR', 11.23, 1123],
-    ['EUR', -11.23, -1123],
-    ['EUR', 1235.67, 123567],
-    ['EUR', -1235.67, -123567],
+    ['EUR', 0, 0.0],
+    ['EUR', 1, 1.0],
+    ['EUR', -1, -1.0],
+    ['EUR', 123, 123.0],
+    ['EUR', -123, -123.0],
+    ['EUR', 1234, 1234.0],
+    ['EUR', -1234, -1234.0],
 ]);
 
-it('can parse string money', function (string $currency, string $value, int $expected, ?string $expectedCurency = null) {
-    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $expectedCurency ?? $currency)->getAmount()->toFloat());
+it('can parse float money', function (string $currency, float $value, float $expected) {
+    $parsed = MoneyParser::parse($value, $currency);
+
+    expect($parsed->getAmount()->toFloat())->toEqual($expected);
+    expect($parsed->getCurrency()->getCurrencyCode())->toEqual($currency);
 })->with([
-    ['EUR', '1', 100],
-    ['EUR', '100', 10000],
-    ['EUR', '-100', -10000],
-    ['EUR', '100.10', 10010],
-    ['EUR', '-100.10', -10010],
-    ['EUR', 'EUR 100.10', 10010],
-    ['EUR', 'EUR -100.10', -10010],
-    ['EUR', 'USD 100.10', 10010, 'USD'],
-    ['EUR', 'USD -100.10', -10010, 'USD'],
+    ['EUR', 0.0, 0.0],
+    ['EUR', 1.0, 1.0],
+    ['EUR', -1.0, -1.0],
+    ['EUR', 123.0, 123.00],
+    ['EUR', -123.0, -123.0],
+    ['EUR', 1234.0, 1234.0],
+    ['EUR', -1234.0, -1234.0],
+    ['EUR', 1234.5, 1234.5],
+    ['EUR', -1234.5, -1234.5],
+    ['EUR', 1234.56, 1234.56],
+    ['EUR', -1234.56, -1234.56],
+]);
+
+it('can parse string money', function (string $currency, string $value, float $expected) {
+    $parsed = MoneyParser::parse($value, $currency);
+
+    expect($parsed->getAmount()->toFloat())->toEqual($expected);
+    expect($parsed->getCurrency()->getCurrencyCode())->toEqual($currency);
+})->with([
+    ['EUR', '0.0', 0.0],
+    ['EUR', '1.0', 1.0],
+    ['EUR', '-1.0', -1.0],
+    ['EUR', '123.0', 123.0],
+    ['EUR', '-123.0', -123.0],
+    ['EUR', '1234.0', 1234.0],
+    ['EUR', '-1234.0', -1234.0],
+    ['EUR', '1234.5', 1234.5],
+    ['EUR', '-1234.5', -1234.5],
+    ['EUR', '1234.56', 1234.56],
+    ['EUR', '-1234.56', -1234.56],
+]);
+
+it('can parse string money with currency', function (string $value, float $expected, ?string $expectedCurrency = null) {
+    $parsed = MoneyParser::parse($value, 'USD'); // check that the string currency override the default currency
+
+    expect($parsed->getAmount()->toFloat())->toEqual($expected);
+    expect($parsed->getCurrency()->getCurrencyCode())->toEqual($expectedCurrency);
+})->with([
+    ['EUR 0.0', 0.0, 'EUR'],
+    ['EUR 1.0', 1.0, 'EUR'],
+    ['EUR -1.0', -1.0, 'EUR'],
+    ['EUR 123.0', 123.00, 'EUR'],
+    ['EUR -123.0', -123.0, 'EUR'],
+    ['EUR 1234.0', 1234.0, 'EUR'],
+    ['EUR -1234.0', -1234.0, 'EUR'],
+    ['EUR 1234.5', 1234.5, 'EUR'],
+    ['EUR -1234.5', -1234.5, 'EUR'],
+    ['EUR 1234.56', 1234.56, 'EUR'],
+    ['EUR -1234.56', -1234.56, 'EUR'],
+    // ignore `,`
+    ['GBP 1,234.56', 1234.56, 'GBP'],
+    ['USD -1,234.56', -1234.56, 'USD'],
 ]);
