@@ -32,9 +32,10 @@ it('can parse float money', function (string $currency, float $value, int $expec
     ['EUR', -1235.67, -123567],
 ]);
 
-it('can parse string money', function (string $currency, string $value, int $expected, ?string $expectedCurency = null) {
-    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $expectedCurency ?? $currency)->getAmount()->toFloat());
+it('can parse string money', function (string $currency, string $value, int $expected, ?string $expectedCurrency = null) {
+    expect(MoneyParser::parse($value, $currency)->getAmount()->toFloat())->toEqual(Money::ofMinor($expected, $expectedCurrency ?? $currency)->getAmount()->toFloat());
 })->with([
+    ['EUR', '0', 0],
     ['EUR', '1', 100],
     ['EUR', '100', 10000],
     ['EUR', '-100', -10000],

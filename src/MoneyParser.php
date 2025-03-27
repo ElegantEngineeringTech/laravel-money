@@ -51,12 +51,10 @@ class MoneyParser
          */
         $amount = str_replace(',', '', $matches['amount']);
 
-        if (! $amount && ! $matches['currency']) {
+        // Ignore '0' as $amount because php cast it to boolean (false),
+        // which wrongly trigger the if condition
+        if ('0' !== $amount && ! $amount && ! $matches['currency']) {
             return null;
-        }
-
-        if (! $amount) {
-            return Money::of(0, $matches['currency']);
         }
 
         return Money::of(
