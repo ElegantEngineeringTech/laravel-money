@@ -5,29 +5,52 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/ElegantEngineeringTech/laravel-money/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/ElegantEngineeringTech/laravel-money/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-money.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-money)
 
-Easily use Brick/Money in your Laravel app.
+## Table of Contents
+
+-   [Introduction](#introduction)
+-   [Features](#features)
+-   [Installation](#installation)
+-   [Configuration](#configuration)
+-   [Storing Money in the Database](#storing-money-in-the-database)
+-   [Usage](#usage)
+    -   [Casting with a Column as Currency (Recommended)](#casting-with-a-column-as-currency-recommended)
+    -   [Casting with a Defined Currency](#casting-with-a-defined-currency)
+    -   [Parsing Values to Money Instances](#parsing-values-to-money-instances)
+    -   [Validation Rule](#validation-rule)
+-   [Testing](#testing)
+-   [Changelog](#changelog)
+-   [Contributing](#contributing)
+-   [Security](#security)
+-   [Credits](#credits)
+-   [License](#license)
+
+## Introduction
+
+This package provides a seamless integration of [Brick/Money](https://github.com/brick/money) with Laravel, allowing you to handle monetary values efficiently within your application.
 
 ## Features
 
--   MoneyCast: Cast your model attributes to `Brick\Money\Money`
--   MoneyParse: Parse strings and other types to `Brick\Money\Money`
--   ValidMoney: Money validation rule
+-   **MoneyCast**: Cast model attributes to `Brick\Money\Money`.
+-   **MoneyParse**: Convert various data types into `Brick\Money\Money` instances.
+-   **ValidMoney**: Implement money validation rules.
 
 ## Installation
 
-You can install the package via Composer:
+Install the package via Composer:
 
 ```bash
 composer require elegantly/laravel-money
 ```
 
-You can publish the config file with:
+## Configuration
+
+To customize the default settings, publish the configuration file:
 
 ```bash
 php artisan vendor:publish --tag="money-config"
 ```
 
-This is the content of the published config file:
+The default configuration file (`config/money.php`) contains:
 
 ```php
 return [
@@ -35,31 +58,50 @@ return [
 ];
 ```
 
+## Storing Money in the Database
+
+The recommended way to store money in the database is to use a `bigInteger` column for the amount and a `string` column for the currency. This ensures precision and avoids floating-point errors. Store the amount in the smallest unit of currency (e.g., cents for USD, centimes for EUR). This approach prevents rounding issues and maintains accuracy in calculations.
+
+Example migration:
+
+```php
+Schema::create('invoices', function (Blueprint $table) {
+    $table->id();
+    $table->bigInteger('amount'); // Store in cents
+    $table->string('currency', 3); // ISO currency code
+    $table->timestamps();
+});
+```
+
 ## Usage
 
-### Casting Using a Column as Currency (Recommended)
+### Casting with a Column as Currency (Recommended)
 
-If you store the currency in a table column alongside the amount value, you can specify the column name like this:
+If your database stores both the amount and the currency in separate columns, you can specify the currency column like this:
 
 ```php
 use Elegantly\Money\MoneyCast;
 
 /**
- * @property ?Money $price
+ * @property ?Money $amount
  * @property ?string $currency
  **/
 class Invoice extends Model {
-
-    protected $casts = [
-        'price' => MoneyCast::class . ':currency'
-    ];
-
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'amount' => MoneyCast::class . ':currency'
+        ];
+    }
 }
 ```
 
-### Casting Using a Defined Currency
+### Casting with a Defined Currency
 
-You can cast your money to a specific currency using the currency code instead of the column name.
+You can also define a specific currency for money casting instead of referencing a column:
 
 ```php
 use Elegantly\Money\MoneyCast;
@@ -69,29 +111,29 @@ use Elegantly\Money\MoneyCast;
  * @property ?Money $cost
  **/
 class Invoice extends Model {
-
-    protected $casts = [
-        'cost' => MoneyCast::class . ':EUR',
-        'price' => MoneyCast::class . ':USD'
-    ];
-
+     /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'cost' => MoneyCast::class . ':EUR',
+            'price' => MoneyCast::class . ':USD'
+        ];
+    }
 }
 ```
 
-### Parsing a Value to a Money Instance
+### Parsing Values to Money Instances
 
-You can parse any string/int/float to a money instance using `MoneyParser`.
-
-Here are some examples of the expected behavior:
+Convert strings, integers, or floats into `Brick\Money\Money` instances using `MoneyParser`:
 
 ```php
 use Elegantly\Money\MoneyParser;
 
 MoneyParser::parse(null, 'EUR'); // null
-
 MoneyParser::parse(110, 'EUR'); // 110.00€
 MoneyParser::parse(100.10, 'EUR'); // 100.10€
-
 MoneyParser::parse('', 'EUR'); // null
 MoneyParser::parse('1', 'EUR'); // 1.00€
 MoneyParser::parse('100.10', 'EUR'); // 100.10€
@@ -99,7 +141,7 @@ MoneyParser::parse('100.10', 'EUR'); // 100.10€
 
 ### Validation Rule
 
-Using `ValidMoney` within Livewire:
+#### Using `ValidMoney` in Livewire
 
 ```php
 namespace App\Livewire;
@@ -116,7 +158,7 @@ class CustomComponent extends Component
 }
 ```
 
-Using `ValidMoney` within a form request:
+#### Using `ValidMoney` in Form Requests
 
 ```php
 namespace App\Http\Requests;
@@ -143,21 +185,23 @@ class CustomFormRequest extends FormRequest
 
 ## Testing
 
+Run the package tests with:
+
 ```bash
 composer test
 ```
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Refer to the [CHANGELOG](CHANGELOG.md) for details on recent updates and modifications.
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Contributions are welcome! See [CONTRIBUTING](CONTRIBUTING.md) for guidelines.
 
-## Security Vulnerabilities
+## Security
 
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
+If you discover any security vulnerabilities, please review our [security policy](../../security/policy) to report them responsibly.
 
 ## Credits
 
@@ -166,4 +210,4 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is released under the MIT License. See [LICENSE.md](LICENSE.md) for details.
