@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Elegantly\Money\Rules\ValidMoney;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;

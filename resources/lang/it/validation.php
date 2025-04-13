@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'money' => 'Il valore non è un importo valido',
     'money_positive' => 'Questo valore non è un importo maggiore di 0',

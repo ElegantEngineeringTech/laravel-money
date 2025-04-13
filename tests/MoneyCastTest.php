@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Brick\Money\Money;
 use Elegantly\Money\Tests\TestModel;
 

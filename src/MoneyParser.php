@@ -1,15 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Elegantly\Money;
 
 use Brick\Math\RoundingMode;
+use Brick\Money\Currency;
 use Brick\Money\Money;
 
 class MoneyParser
 {
     public static function parse(
         mixed $value,
-        string $currency
+        Currency|string $currency
     ): ?Money {
 
         if ($value === null) {
@@ -35,8 +38,10 @@ class MoneyParser
         return null;
     }
 
-    protected static function parseString(string $value, string $currency): ?Money
-    {
+    protected static function parseString(
+        string $value,
+        Currency|string $currency
+    ): ?Money {
 
         if (blank($value)) {
             return null;

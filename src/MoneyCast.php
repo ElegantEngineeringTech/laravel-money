@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Elegantly\Money;
 
 use Brick\Money\Currency;
@@ -7,7 +9,6 @@ use Brick\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Database\Eloquent\SerializesCastableAttributes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 
 /**
  * Custom Eloquent attribute cast for handling monetary values.
@@ -29,6 +30,19 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
     }
 
     /**
+     * @param  array<string, mixed>  $attributes  The model's attributes.
+     */
+    public function isCurrencyAttribute(array $attributes): bool
+    {
+        return $this->currencyOrAttribute && array_key_exists($this->currencyOrAttribute, $attributes);
+    }
+
+    public function isCurrencyCode(): bool
+    {
+        return $this->currencyOrAttribute && mb_strlen($this->currencyOrAttribute) === 3;
+    }
+
+    /**
      * Retrieve the currency code from the model's attributes.
      *
      * @param  array<string, mixed>  $attributes  The model's attributes.
@@ -36,9 +50,9 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      */
     protected function getCurrencyAttribute(array $attributes): ?string
     {
-        if ($this->currencyOrAttribute) {
+        if ($this->isCurrencyAttribute($attributes)) {
             /** @var ?string $currency */
-            $currency = Arr::get($attributes, $this->currencyOrAttribute);
+            $currency = $attributes[$this->currencyOrAttribute];
 
             return $currency;
         }
@@ -57,9 +71,15 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
         /** @var string $default */
         $default = config('money.default_currency');
 
-        return Currency::of(
-            $this->getCurrencyAttribute($attributes) ?: $default
-        );
+        if ($currency = $this->getCurrencyAttribute($attributes)) {
+            return Currency::of($currency);
+        }
+
+        if ($this->currencyOrAttribute && $this->isCurrencyCode()) {
+            return Currency::of($this->currencyOrAttribute);
+        }
+
+        return Currency::of($default);
     }
 
     /**
@@ -97,10 +117,10 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
     {
         $money = MoneyParser::parse($value, $this->getCurrency($attributes));
 
-        if ($money && $this->currencyOrAttribute) {
+        if ($this->currencyOrAttribute) {
             return [
-                $key => $money->getMinorAmount()->toInt(),
-                $this->currencyOrAttribute => $money->getCurrency()->getCurrencyCode(),
+                $key => $money?->getMinorAmount()->toInt(),
+                $this->currencyOrAttribute => $money?->getCurrency()->getCurrencyCode(),
             ];
         }
 

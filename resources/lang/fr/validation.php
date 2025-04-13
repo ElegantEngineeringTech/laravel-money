@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'money' => "Cette valeur n'est pas valide",
     'money_positive' => "Cette valeur n'est pas valide et supérieure à zéro",
