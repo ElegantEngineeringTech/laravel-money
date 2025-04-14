@@ -63,6 +63,12 @@ it('can parse string money', function (string $currency, string $value, float $e
     ['EUR', '-1234.5', -1234.5],
     ['EUR', '1234.56', 1234.56],
     ['EUR', '-1234.56', -1234.56],
+    // ignore ` `
+    ['EUR', '-1 234.56', -1234.56],
+    ['EUR', '1,234.56', 1234.56],
+    // ignore `,`
+    ['EUR', '1,234.56', 1234.56],
+    ['EUR', '-1,234.56', -1234.56],
 ]);
 
 it('can parse string money with currency', function (string $value, float $expected, ?string $expectedCurrency = null) {
@@ -82,6 +88,9 @@ it('can parse string money with currency', function (string $value, float $expec
     ['EUR -1234.5', -1234.5, 'EUR'],
     ['EUR 1234.56', 1234.56, 'EUR'],
     ['EUR -1234.56', -1234.56, 'EUR'],
+    // ignore ` `
+    ['GBP 1 234.56', 1234.56, 'GBP'],
+    ['USD -1 234.56', -1234.56, 'USD'],
     // ignore `,`
     ['GBP 1,234.56', 1234.56, 'GBP'],
     ['USD -1,234.56', -1234.56, 'USD'],

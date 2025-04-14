@@ -43,6 +43,8 @@ class MoneyParser
         Currency|string $currency
     ): ?Money {
 
+        $value = str($value)->trim()->replace([',', ' '], '')->value();
+
         if (blank($value)) {
             return null;
         }
@@ -52,7 +54,7 @@ class MoneyParser
          */
         preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[-\d,\.]*)/", $value, $matches);
         /** @var array{ currency: string, amount: string } $matches */
-        $amount = str_replace(',', '', $matches['amount']);
+        $amount = $matches['amount'];
         $currency = $matches['currency'] ?: $currency;
 
         if (blank($amount)) {
