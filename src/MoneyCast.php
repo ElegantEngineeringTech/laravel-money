@@ -29,6 +29,11 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
         // No initialization required
     }
 
+    public static function of(string $currencyOrAttribute): string
+    {
+        return static::class.':'.$currencyOrAttribute;
+    }
+
     /**
      * @param  array<string, mixed>  $attributes  The model's attributes.
      */

@@ -93,7 +93,7 @@ class Invoice extends Model {
     protected function casts(): array
     {
         return [
-            'amount' => MoneyCast::class . ':currency'
+            'amount' => MoneyCast::of('currency')
         ];
     }
 }
@@ -117,8 +117,8 @@ class Invoice extends Model {
     protected function casts(): array
     {
         return [
-            'cost' => MoneyCast::class . ':EUR',
-            'price' => MoneyCast::class . ':USD'
+            'cost' => MoneyCast::of('EUR'),
+            'price' => MoneyCast::of('USD')
         ];
     }
 }
