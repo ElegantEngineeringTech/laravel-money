@@ -12,10 +12,12 @@
 -   [Configuration](#configuration)
 -   [Storing Money in the Database](#storing-money-in-the-database)
 -   [Usage](#usage)
-    -   [Casting with a Column as Currency (Recommended)](#casting-with-a-column-as-currency-recommended)
-    -   [Casting with a Defined Currency](#casting-with-a-defined-currency)
-    -   [Parsing Values to Money Instances](#parsing-values-to-money-instances)
+
+    -   [Casting with a Currency Column (Recommended)](#casting-with-a-currency-column-recommended)
+    -   [Casting with a Fixed Currency](#casting-with-a-fixed-currency)
+    -   [Parsing Values](#parsing-values)
     -   [Validation Rule](#validation-rule)
+
 -   [Testing](#testing)
 -   [Changelog](#changelog)
 -   [Contributing](#contributing)
@@ -25,17 +27,17 @@
 
 ## Introduction
 
-This package provides a seamless integration of [Brick/Money](https://github.com/brick/money) with Laravel, allowing you to handle monetary values efficiently within your application.
+This package provides seamless, expressive integration of [Brick/Money](https://github.com/brick/money) with Laravel. It enables safe, precise handling of monetary values in your application—using value objects, smart casting, robust parsing, and powerful validation tools.
 
 ## Features
 
--   **MoneyCast**: Cast model attributes to `Brick\Money\Money`.
--   **MoneyParse**: Convert various data types into `Brick\Money\Money` instances.
--   **ValidMoney**: Implement money validation rules.
+-   **MoneyCast** – Automatically cast Eloquent attributes to `Brick\Money\Money`.
+-   **MoneyParser** – Convert strings, integers, or floats into `Money` instances safely.
+-   **ValidMoney Rule** – Validate monetary input with min/max boundaries, type safety, and nullability.
 
 ## Installation
 
-Install the package via Composer:
+Install via Composer:
 
 ```bash
 composer require elegantly/laravel-money
@@ -43,13 +45,13 @@ composer require elegantly/laravel-money
 
 ## Configuration
 
-To customize the default settings, publish the configuration file:
+Publish the configuration file if you need to customize defaults:
 
 ```bash
 php artisan vendor:publish --tag="money-config"
 ```
 
-The default configuration file (`config/money.php`) contains:
+Default config (`config/money.php`):
 
 ```php
 return [
@@ -59,84 +61,90 @@ return [
 
 ## Storing Money in the Database
 
-The recommended way to store money in the database is to use a `bigInteger` column for the amount and a `string` column for the currency. This ensures precision and avoids floating-point errors. Store the amount in the smallest unit of currency (e.g., cents for USD, centimes for EUR). This approach prevents rounding issues and maintains accuracy in calculations.
+For maximum precision, store money using:
+
+-   a `bigInteger` column for the amount (in the smallest currency unit)
+-   a `string` column for the ISO currency code
+
+This avoids floating-point precision issues and ensures accurate calculations.
 
 Example migration:
 
 ```php
 Schema::create('invoices', function (Blueprint $table) {
     $table->id();
-    $table->bigInteger('amount'); // Store in cents
-    $table->string('currency', 3); // ISO currency code
+    $table->bigInteger('amount');   // e.g., 1000 = $10.00
+    $table->string('currency', 3);  // ISO 4217 code
     $table->timestamps();
 });
 ```
 
 ## Usage
 
-### Casting with a Column as Currency (Recommended)
+### Casting with a Currency Column (Recommended)
 
-If your database stores both the amount and the currency in separate columns, you can specify the currency column like this:
+If your model stores both amount and currency, reference the currency column in the cast:
 
 ```php
 use Elegantly\Money\MoneyCast;
+use Brick\Money\Money;
 
 /**
- * @property ?Money $amount
- * @property ?string $currency
- **/
-class Invoice extends Model {
-    /**
-     * @return array<string, string>
-     */
+ * @property Money $amount
+ * @property string $currency
+ */
+class Invoice extends Model
+{
+
     protected function casts(): array
     {
         return [
-            'amount' => MoneyCast::of('currency')
+            'amount' => MoneyCast::of('currency'),
         ];
     }
 }
 ```
 
-### Casting with a Defined Currency
+### Casting with a Fixed Currency
 
-You can also define a specific currency for money casting instead of referencing a column:
+If the currency is known and constant, define it directly:
 
 ```php
 use Elegantly\Money\MoneyCast;
+use Brick\Money\Money;
 
 /**
- * @property ?Money $price
- * @property ?Money $cost
- **/
-class Invoice extends Model {
-     /**
-     * @return array<string, string>
-     */
+ * @property Money $amount
+ * @property Money $cost
+ */
+class Invoice extends Model
+{
     protected function casts(): array
     {
         return [
-            'cost' => MoneyCast::of('EUR'),
-            'price' => MoneyCast::of('USD')
+            'cost'  => MoneyCast::of('EUR'),
+            'price' => MoneyCast::of('USD'),
         ];
     }
 }
 ```
 
-### Parsing Values to Money Instances
+### Parsing Values
 
-Convert strings, integers, or floats into `Brick\Money\Money` instances using `MoneyParser`:
+`MoneyParser` converts common numeric and string formats into `Money` instances:
 
 ```php
 use Elegantly\Money\MoneyParser;
 
-MoneyParser::parse(null, 'EUR'); // null
-MoneyParser::parse(110, 'EUR'); // 110.00€
-MoneyParser::parse(100.10, 'EUR'); // 100.10€
-MoneyParser::parse('', 'EUR'); // null
-MoneyParser::parse('1', 'EUR'); // 1.00€
-MoneyParser::parse('100.10', 'EUR'); // 100.10€
+MoneyParser::parse(null, 'EUR');     // null
+MoneyParser::parse(110, 'EUR');      // 110.00 €
+MoneyParser::parse(100.10, 'EUR');   // 100.10 €
+MoneyParser::parse('', 'EUR');       // null
+MoneyParser::parse('1', 'EUR');      // 1.00 €
+MoneyParser::parse('100.10', 'EUR'); // 100.10 €
 ```
+
+The parser handles nullability, empty strings, integers, floats, and decimal string formats gracefully.
 
 ### Validation Rule
 
@@ -146,12 +154,12 @@ MoneyParser::parse('100.10', 'EUR'); // 100.10€
 namespace App\Livewire;
 
 use Elegantly\Money\Rules\ValidMoney;
-use Illuminate\Foundation\Http\FormRequest;
+use Livewire\Component;
 
 class CustomComponent extends Component
 {
     #[Validate([
-        new ValidMoney(nullable: false, min: 0, max: 100)
+        new ValidMoney(nullable: false, min: 0, max: 100),
     ])]
     public ?int $price = null;
 }
@@ -175,7 +183,7 @@ class CustomFormRequest extends FormRequest
                     nullable: false,
                     min: 0,
                     max: 100
-                )
+                ),
             ],
         ];
     }
@@ -184,7 +192,7 @@ class CustomFormRequest extends FormRequest
 
 ## Testing
 
-Run the package tests with:
+Run the test suite:
 
 ```bash
 composer test
@@ -192,15 +200,15 @@ composer test
 
 ## Changelog
 
-Refer to the [CHANGELOG](CHANGELOG.md) for details on recent updates and modifications.
+See the [CHANGELOG](CHANGELOG.md) for a full history of updates.
 
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Review the [CONTRIBUTING](CONTRIBUTING.md) file for details.
 
 ## Security
 
-If you discover any security vulnerabilities, please review our [security policy](../../security/policy) to report them responsibly.
+If you discover a security vulnerability, please refer to the [security policy](../../security/policy).
 
 ## Credits
 
@@ -209,4 +217,5 @@ If you discover any security vulnerabilities, please review our [security policy
 
 ## License
 
-This package is released under the MIT License. See [LICENSE.md](LICENSE.md) for details.
+This package is open-source software released under the MIT License.
+See [LICENSE.md](LICENSE.md) for details.
