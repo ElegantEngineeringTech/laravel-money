@@ -6,7 +6,7 @@ use Elegantly\Money\Rules\ValidMoney;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
-it('validate money', function ($amount, bool $expected, ?int $min = null, ?int $max = null, bool $nullable = true) {
+it('validate money', function ($amount, bool $expected, mixed $min = null, mixed $max = null, bool $nullable = true) {
 
     $rule = new ValidMoney(min: $min, max: $max, nullable: $nullable);
 
@@ -40,4 +40,6 @@ it('validate money', function ($amount, bool $expected, ?int $min = null, ?int $
     ['EUR 20', true, 10, 20],
     ['EUR 1', false, 10, 20],
     ['EUR 100', false, 10, 20],
+    ['EUR 0.50', true, 0.50, 20],
+    ['EUR 0.40', false, 0.50, 20],
 ]);
