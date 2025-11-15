@@ -7,13 +7,15 @@ namespace Elegantly\Money\Rules;
 use Closure;
 use Elegantly\Money\MoneyParser;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Brick\Money\AbstractMoney;
+use Brick\Math\BigNumber;
 
 class ValidMoney implements ValidationRule
 {
     public function __construct(
         public bool $nullable = true,
-        public ?int $min = null,
-        public ?int $max = null
+        public AbstractMoney|BigNumber|int|float|string|null $min = null,
+        public AbstractMoney|BigNumber|int|float|string|null $max = null
     ) {
         //
     }
