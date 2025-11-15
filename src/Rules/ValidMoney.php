@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Elegantly\Money\Rules;
 
+use Brick\Math\BigNumber;
+use Brick\Money\AbstractMoney;
 use Closure;
 use Elegantly\Money\MoneyParser;
 use Illuminate\Contracts\Validation\ValidationRule;
-use Brick\Money\AbstractMoney;
-use Brick\Math\BigNumber;
 
 class ValidMoney implements ValidationRule
 {
