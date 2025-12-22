@@ -24,11 +24,13 @@ class MoneyParser
         }
 
         if (is_int($value)) {
-            return Money::of($value, $currency, null, RoundingMode::HALF_EVEN);
+            // @phpstan-ignore-next-line
+            return Money::of($value, $currency, null, config('money.rounding_mode', RoundingMode::HALF_UP));
         }
 
         if (is_float($value)) {
-            return Money::of($value, $currency, null, RoundingMode::HALF_EVEN);
+            // @phpstan-ignore-next-line
+            return Money::of($value, $currency, null, config('money.rounding_mode', RoundingMode::HALF_UP));
         }
 
         if (is_string($value)) {
@@ -64,7 +66,8 @@ class MoneyParser
         return Money::of(
             amount: $amount,
             currency: $currency,
-            roundingMode: RoundingMode::HALF_EVEN
+            // @phpstan-ignore-next-line
+            roundingMode: config('money.rounding_mode', RoundingMode::HALF_UP),
         );
     }
 }
