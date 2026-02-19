@@ -30,7 +30,7 @@ class MoneyParser
 
         if (is_float($value)) {
             // @phpstan-ignore-next-line
-            return Money::of($value, $currency, null, config('money.rounding_mode', RoundingMode::HALF_UP));
+            return Money::of((string) $value, $currency, null, config('money.rounding_mode', RoundingMode::HALF_UP));
         }
 
         if (is_string($value)) {
