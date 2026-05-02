@@ -40,6 +40,6 @@ it('validate money', function ($amount, bool $expected, mixed $min = null, mixed
     ['EUR 20', true, 10, 20],
     ['EUR 1', false, 10, 20],
     ['EUR 100', false, 10, 20],
-    ['EUR 0.50', true, 0.50, 20],
-    ['EUR 0.40', false, 0.50, 20],
+    ['EUR 0.50', true, '0.50', 20],
+    ['EUR 0.40', false, '0.50', 20],
 ]);

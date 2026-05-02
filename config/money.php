@@ -10,5 +10,5 @@ return [
     /**
      * Rounding mode used when parsing money
      */
-    'rounding_mode' => RoundingMode::HALF_UP,
+    'rounding_mode' => RoundingMode::HalfUp,
 ];
