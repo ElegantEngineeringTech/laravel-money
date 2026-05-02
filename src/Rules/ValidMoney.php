@@ -15,8 +15,8 @@ class ValidMoney implements ValidationRule
 {
     public function __construct(
         public bool $nullable = true,
-        public AbstractMoney|BigNumber|int|float|string|null $min = null,
-        public AbstractMoney|BigNumber|int|float|string|null $max = null
+        public AbstractMoney|BigNumber|int|string|null $min = null,
+        public AbstractMoney|BigNumber|int|string|null $max = null
     ) {
         //
     }

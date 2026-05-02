@@ -12,9 +12,11 @@ class MoneyParser
 {
     public static function parse(
         mixed $value,
-        Currency|string $currency
+        Currency|string $currency,
+        ?RoundingMode $roundingMode = null
     ): ?Money {
-
+        $roundingMode ??= config('money.rounding_mode', RoundingMode::HalfUp);
+        /** @var RoundingMode $roundingMode */
         if ($value === null) {
             return null;
         }
@@ -24,17 +26,27 @@ class MoneyParser
         }
 
         if (is_int($value)) {
-            // @phpstan-ignore-next-line
-            return Money::of($value, $currency, null, config('money.rounding_mode', RoundingMode::HalfUp));
+            return Money::of(
+                amount: $value,
+                currency: $currency,
+                roundingMode: $roundingMode,
+            );
         }
 
         if (is_float($value)) {
-            // @phpstan-ignore-next-line
-            return Money::of((string) $value, $currency, null, config('money.rounding_mode', RoundingMode::HalfUp));
+            return Money::of(
+                amount: (string) $value,
+                currency: $currency,
+                roundingMode: $roundingMode,
+            );
         }
 
         if (is_string($value)) {
-            return static::parseString($value, $currency);
+            return static::parseString(
+                $value,
+                $currency,
+                $roundingMode
+            );
         }
 
         return null;
@@ -42,9 +54,11 @@ class MoneyParser
 
     protected static function parseString(
         string $value,
-        Currency|string $currency
+        Currency|string $currency,
+        ?RoundingMode $roundingMode = null
     ): ?Money {
-
+        $roundingMode ??= config('money.rounding_mode', RoundingMode::HalfUp);
+        /** @var RoundingMode $roundingMode */
         $value = str($value)->trim()->replace([',', ' '], '')->value();
 
         if (blank($value)) {
@@ -55,7 +69,10 @@ class MoneyParser
          * Not found currency or amount will return "" and not null
          */
         preg_match("/(?<currency>[A-Z]{3})? ?(?<amount>[-\d,\.]*)/", $value, $matches);
-        /** @var array{ currency: string, amount: string } $matches */
+
+        /**
+         * @var array{0: string, currency: string, 1: string, amount: string, 2: string} $matches
+         */
         $amount = $matches['amount'];
         $currency = $matches['currency'] ?: $currency;
 
@@ -66,8 +83,7 @@ class MoneyParser
         return Money::of(
             amount: $amount,
             currency: $currency,
-            // @phpstan-ignore-next-line
-            roundingMode: config('money.rounding_mode', RoundingMode::HalfUp),
+            roundingMode: $roundingMode,
         );
     }
 }
