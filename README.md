@@ -1,8 +1,8 @@
 # Elegant Integration of Brick/Money for Laravel
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/elegantly/laravel-money.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-money)
-[![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-money.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-money)
-[![run-tests](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/run-tests.yml)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/elegantly/laravel-money.svg)](https://packagist.org/packages/elegantly/laravel-money)
+[![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-money.svg)](https://packagist.org/packages/elegantly/laravel-money)
+[![Tests](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/run-tests.yml)
 [![Laravel Pint](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/pint.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/pint.yml)
 [![PHPStan](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/phpstan.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/phpstan.yml)
 
