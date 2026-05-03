@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/elegantly/laravel-money.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-money)
 [![Total Downloads](https://img.shields.io/packagist/dt/elegantly/laravel-money.svg?style=flat-square)](https://packagist.org/packages/elegantly/laravel-money)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/ElegantEngineeringTech/laravel-money/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/ElegantEngineeringTech/laravel-money/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![run-tests](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/run-tests.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/run-tests.yml)
 [![Laravel Pint](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/pint.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/pint.yml)
 [![PHPStan](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/phpstan.yml/badge.svg)](https://github.com/ElegantEngineeringTech/laravel-money/actions/workflows/phpstan.yml)
 
