@@ -27,9 +27,12 @@ class TestCase extends Orchestra
         $app['db']->connection()->getSchemaBuilder()->create('tests', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->integer('price_default_currency')->nullable();
             $table->integer('price')->nullable();
             $table->string('currency')->nullable();
+
+            $table->integer('another_price')->nullable();
+
+            $table->integer('price_default_currency')->nullable();
 
             $table->timestamps();
         });

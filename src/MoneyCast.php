@@ -18,33 +18,31 @@ use Illuminate\Database\Eloquent\Model;
 class MoneyCast implements CastsAttributes, SerializesCastableAttributes
 {
     /**
-     * @param  ?string  $currencyOrAttribute  The currency code or the model attribute storing the currency code.
-     *                                        Usage examples:
-     *                                        - MoneyCast::class.':currency' (Currency stored in a model attribute)
-     *                                        - MoneyCast::class.':EUR' (Fixed currency set to EUR)
+     * @param  ?string  $currency  The currency code or the model attribute storing the currency code.
+     *                             Usage examples:
+     *                             - MoneyCast::class.':currency' (Currency stored in a model attribute)
+     *                             - MoneyCast::class.':EUR' (Fixed currency set to EUR)
      */
     public function __construct(
-        protected ?string $currencyOrAttribute = null
+        protected ?string $currency = null
     ) {
         // No initialization required
     }
 
-    public static function of(string $currencyOrAttribute): string
+    /**
+     * @param  string  $currency  The currency code or the model attribute storing the currency code.
+     */
+    public static function of(string $currency): string
     {
-        return static::class.':'.$currencyOrAttribute;
+        return static::class.':'.$currency;
     }
 
     /**
-     * @param  array<string, mixed>  $attributes  The model's attributes.
+     * @return ($currency is null ? false : bool)
      */
-    public function isCurrencyAttribute(array $attributes): bool
+    public function isCurrencyCode(?string $currency): bool
     {
-        return $this->currencyOrAttribute && array_key_exists($this->currencyOrAttribute, $attributes);
-    }
-
-    public function isCurrencyCode(): bool
-    {
-        return $this->currencyOrAttribute && mb_strlen($this->currencyOrAttribute) === 3;
+        return $currency && mb_strlen($currency) === 3;
     }
 
     /**
@@ -53,16 +51,16 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * @param  array<string, mixed>  $attributes  The model's attributes.
      * @return ?string The currency code, if available.
      */
-    protected function getCurrencyAttribute(array $attributes): ?string
+    protected function getCurrencyAttributeValue(?string $currency, array $attributes): ?string
     {
-        if ($this->isCurrencyAttribute($attributes)) {
-            /** @var ?string $currency */
-            $currency = $attributes[$this->currencyOrAttribute];
-
-            return $currency;
+        if ($currency === null) {
+            return null;
         }
 
-        return null;
+        /** @var ?string $value */
+        $value = $attributes[$currency] ?? null;
+
+        return $value;
     }
 
     /**
@@ -71,17 +69,17 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * @param  array<string, mixed>  $attributes  The model's attributes.
      * @return Currency The currency instance.
      */
-    protected function getCurrency(array $attributes): Currency
+    protected function getCurrencyValue(array $attributes): Currency
     {
         /** @var string $default */
         $default = config('money.default_currency');
 
-        if ($currency = $this->getCurrencyAttribute($attributes)) {
+        if ($currency = $this->getCurrencyAttributeValue($this->currency, $attributes)) {
             return Currency::of($currency);
         }
 
-        if ($this->currencyOrAttribute && $this->isCurrencyCode()) {
-            return Currency::of($this->currencyOrAttribute);
+        if ($this->currency && $this->isCurrencyCode($this->currency)) {
+            return Currency::of($this->currency);
         }
 
         return Currency::of($default);
@@ -101,7 +99,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
             return null;
         }
 
-        return Money::ofMinor($value, $this->getCurrency($attributes));
+        return Money::ofMinor($value, $this->getCurrencyValue($attributes));
     }
 
     /**
@@ -118,18 +116,22 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      * @param  null|int|float|string|Money  $value  The monetary value to store.
      * @return array<string, int|string|null> The formatted data for storage.
      */
-    public function set(Model $model, string $key, mixed $value, array $attributes): array
+    public function set(Model $model, string $key, mixed $value, array $attributes): null|int|array
     {
-        $money = MoneyParser::parse($value, $this->getCurrency($attributes));
+        $money = MoneyParser::parse($value, $this->getCurrencyValue($attributes));
 
-        if ($this->currencyOrAttribute) {
+        if ($money === null) {
+            return null;
+        }
+
+        if ($this->currency && ! $this->isCurrencyCode($this->currency)) {
             return [
-                $key => $money?->getMinorAmount()->toInt(),
-                $this->currencyOrAttribute => $money?->getCurrency()->getCurrencyCode(),
+                $key => $money->getMinorAmount()->toInt(),
+                $this->currency => $money->getCurrency()->getCurrencyCode(),
             ];
         }
 
-        return [$key => $money?->getMinorAmount()->toInt()];
+        return $money->getMinorAmount()->toInt();
     }
 
     /**
