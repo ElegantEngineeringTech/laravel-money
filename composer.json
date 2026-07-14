@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "brick/money": "^0.13.0",
+        "brick/money": "^0.14.0",
         "illuminate/contracts": "^13.0",
         "spatie/laravel-package-tools": "^1.13.0"
     },
