@@ -1,5 +1,5 @@
 # Please see the documentation for all configuration options:
-# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+# https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
 
 version: 2
 updates:
@@ -10,10 +10,14 @@ updates:
       interval: "weekly"
     labels:
       - "dependencies"
-      
-  # Enable version updates for npm
+    cooldown:
+      default-days: 1
+
   - package-ecosystem: "composer"
-    # Look for `composer.json` and `lock` files in the `root` directory
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    labels:
+      - "dependencies"
+    cooldown:
+      default-days: 1
