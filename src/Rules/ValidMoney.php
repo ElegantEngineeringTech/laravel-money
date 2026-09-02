@@ -8,6 +8,7 @@ use Brick\Math\BigNumber;
 use Brick\Money\AbstractMoney;
 use Closure;
 use Elegantly\Money\MoneyParser;
+use Elegantly\Money\MoneyServiceProvider;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
@@ -28,13 +29,10 @@ class ValidMoney implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        /** @var string $defaultCurrency */
-        $defaultCurrency = config('money.default_currency');
-        $money = MoneyParser::parse($value, $defaultCurrency);
-
-        if (! $this->nullable && $money === null) {
-            $fail('money::validation.money')->translate();
-        }
+        $money = MoneyParser::parse(
+            $value,
+            MoneyServiceProvider::getDefaultCurrency()
+        );
 
         if ($money) {
             if (
@@ -54,6 +52,9 @@ class ValidMoney implements ValidationRule
                     'value' => $this->max,
                 ]);
             }
+        } elseif (! $this->nullable) {
+            $fail('money::validation.money')->translate();
         }
+
     }
 }

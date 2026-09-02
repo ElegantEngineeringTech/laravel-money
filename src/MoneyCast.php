@@ -71,8 +71,7 @@ class MoneyCast implements CastsAttributes, SerializesCastableAttributes
      */
     protected function getCurrencyValue(array $attributes): Currency
     {
-        /** @var string $default */
-        $default = config('money.default_currency');
+        $default = MoneyServiceProvider::getDefaultCurrency();
 
         if ($currency = $this->getCurrencyAttributeValue($this->currency, $attributes)) {
             return Currency::of($currency);

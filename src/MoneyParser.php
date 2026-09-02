@@ -15,8 +15,8 @@ class MoneyParser
         Currency|string $currency,
         ?RoundingMode $roundingMode = null
     ): ?Money {
-        $roundingMode ??= config('money.rounding_mode', RoundingMode::HalfUp);
-        /** @var RoundingMode $roundingMode */
+        $roundingMode ??= MoneyServiceProvider::getRoundingMode();
+
         if ($value === null) {
             return null;
         }
@@ -57,11 +57,11 @@ class MoneyParser
         Currency|string $currency,
         ?RoundingMode $roundingMode = null
     ): ?Money {
-        $roundingMode ??= config('money.rounding_mode', RoundingMode::HalfUp);
-        /** @var RoundingMode $roundingMode */
+        $roundingMode ??= MoneyServiceProvider::getRoundingMode();
+
         $value = str($value)->trim()->replace([',', ' '], '')->value();
 
-        if (blank($value)) {
+        if (blank($value) || $value === '-') {
             return null;
         }
 
@@ -76,7 +76,7 @@ class MoneyParser
         $amount = $matches['amount'];
         $currency = $matches['currency'] ?: $currency;
 
-        if (blank($amount)) {
+        if (blank($amount) || $amount === '-') {
             return null;
         }
 
