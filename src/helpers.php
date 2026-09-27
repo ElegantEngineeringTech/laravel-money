@@ -7,6 +7,7 @@ namespace Elegantly\Money;
 use Brick\Math\RoundingMode;
 use Brick\Money\Currency;
 use Brick\Money\Money;
+use Closure;
 
 function money(string|int|float|Money|null $value, null|string|Currency $currency = null): ?Money
 {
@@ -21,25 +22,32 @@ function money(string|int|float|Money|null $value, null|string|Currency $currenc
 /**
  * Sum the Money values at the given key.
  *
- * @param  iterable<array-key, mixed>  $items
+ * @template TValue
+ *
+ * @param  iterable<array-key, TValue>  $items
+ * @param  string|(Closure(TValue $item):?Money)  $key
  */
 function sumMoney(
     iterable $items,
-    string $key,
+    string|Closure $key,
     ?RoundingMode $roundingMode = null,
 ): ?Money {
     $roundingMode ??= MoneyServiceProvider::getRoundingMode();
 
-    $items = collect($items)->where($key, '!=', null);
+    // @phpstan-ignore-next-line
+    $getter = $key instanceof Closure ? $key : fn ($item): ?Money => data_get($item, $key);
 
-    if ($first = $items->shift()) {
-        // @phpstan-ignore-next-line
-        return $items->reduce(
-            // @phpstan-ignore-next-line
-            fn (Money $total, $item) => $total->plus(data_get($item, $key), $roundingMode),
-            data_get($first, $key),
-        );
+    $total = null;
+
+    foreach ($items as $item) {
+        $money = $getter($item);
+
+        if ($money === null) {
+            continue;
+        }
+
+        $total = $total === null ? $money : $total->plus($money, $roundingMode);
     }
 
-    return null;
+    return $total;
 }
