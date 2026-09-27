@@ -19,6 +19,7 @@
     -   [Casting with a Currency Column (Recommended)](#casting-with-a-currency-column-recommended)
     -   [Casting with a Fixed Currency](#casting-with-a-fixed-currency)
     -   [Parsing Values](#parsing-values)
+    -   [Summing Money Values](#summing-money-values)
     -   [Validation Rule](#validation-rule)
 
 -   [Testing](#testing)
@@ -36,6 +37,7 @@ This package provides seamless, expressive integration of [Brick/Money](https://
 
 -   **MoneyCast** – Automatically cast Eloquent attributes to `Brick\Money\Money`.
 -   **MoneyParser** – Convert strings, integers, or floats into `Money` instances safely.
+-   **sumMoney** – Sum money values from an iterable using a key or callback.
 -   **ValidMoney Rule** – Validate monetary input with min/max boundaries, type safety, and nullability.
 
 ## Installation
@@ -148,6 +150,27 @@ MoneyParser::parse('100.10', 'EUR'); // 100.10 €
 ```
 
 The parser handles nullability, empty strings, integers, floats, and decimal string formats gracefully.
+
+### Summing Money Values
+
+Use `sumMoney()` to add `Money` values from an iterable. Pass a key (resolved with Laravel's `data_get`) or a callback that returns a `Money` value or `null`:
+
+```php
+use Brick\Money\Money;
+
+use function Elegantly\Money\sumMoney;
+
+$items = [
+    ['price' => Money::of('10.25', 'EUR')],
+    ['price' => null],
+    ['price' => Money::of('4.75', 'EUR')],
+];
+
+sumMoney($items, 'price'); // Money::of('15.00', 'EUR')
+sumMoney($items, fn (array $item) => $item['price']); // Same result
+```
+
+Null values are skipped. If the iterable is empty or contains no `Money` values, the result is `null`. An optional third argument accepts a `Brick\Math\RoundingMode`; otherwise, the configured rounding mode is used. Values must have compatible currencies.
 
 ### Validation Rule
 
