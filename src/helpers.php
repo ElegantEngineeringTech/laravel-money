@@ -34,13 +34,16 @@ function sumMoney(
 ): ?Money {
     $roundingMode ??= MoneyServiceProvider::getRoundingMode();
 
-    // @phpstan-ignore-next-line
-    $getter = $key instanceof Closure ? $key : fn ($item): ?Money => data_get($item, $key);
+    $key = match (true) {
+        // @phpstan-ignore-next-line
+        is_string($key) => fn ($item): ?Money => data_get($item, $key),
+        default => $key,
+    };
 
     $total = null;
 
     foreach ($items as $item) {
-        $money = $getter($item);
+        $money = $key($item);
 
         if ($money === null) {
             continue;
